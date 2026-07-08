@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta charset="UTF-8" />
+
+    <title></title>
+
+    <script
+      id="sap-ui-bootstrap"
+      src="https://sapui5.hana.ondemand.com/1.71/resources/sap-ui-core.js"
+      data-sap-ui-async="true"
+      data-sap-ui-preload="async"
+      data-sap-ui-libs="sap.m, sap.tnt"
+      data-sap-ui-theme="sap_belize"
+      data-sap-ui-compatVersion="edge"
+      data-sap-ui-resourceroots='{"sps.wms": "./front/"}'
+    ></script>
+
+    <link rel="stylesheet" type="text/css" href="../front/css/style.css" />
+
+    <script>
+      sap.ui.getCore().attachInit(function() {
+        sap.ui.require(['sap/ui/core/ComponentContainer'], function() {
+          new sap.ui.core.ComponentContainer({
+            name: 'sps.wms',
+            height: '100%',
+            settings: {
+              id: 'sps.wms'
+            }
+          }).placeAt('content')
+        })
+      })
+    </script>
+  </head>
+
+  <body class="sapUiBody" id="content"></body>
+</html>

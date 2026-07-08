@@ -1,0 +1,65 @@
+tr[data-focus="true"] {
+  background: #e2ebf3 !important;
+  color: #fff !important;
+}
+
+.button-red span {
+  background-color: #cd5454 !important;
+  border-color: #c74141 !important;
+}
+
+.sapMSplitContainerMaster {
+  width: 450px !important;
+}
+
+/* ====== LOGIN - INICIO ====== */
+.loginBackground {
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+.boxLogin {
+  background-color: #fff;
+  display: inline-block;
+  max-width: 300px;
+  text-align: center;
+  padding: 15px 0;
+  border: 3px solid #d8d8d8;
+  border-radius: 5px;
+}
+
+.morepadding {
+  padding: 10px 0;
+}
+
+.loginImageLeft {
+  float: left;
+  max-height: 4rem;
+}
+
+.loginImageRight {
+  float: right;
+  max-height: 5rem;
+}
+/* ====== LOGIN - FIM ====== */
+
+.textBold {
+  font-weight: bold;
+}
+
+/* ===== input non editable */
+.sapMInputBaseContentWrapperError {
+  border-color: #ee0000 !important;
+}
+.TextError{ 
+  color: #ee0000 !important;  
+}
+
+.upload {
+  padding: 6px;
+}
+
+.disabledbutton {
+  pointer-events: none;
+  opacity: 0.4;
+}

@@ -1,0 +1,15 @@
+<core:FragmentDefinition
+	xmlns="sap.m"
+	xmlns:core="sap.ui.core">
+	<SelectDialog
+		title="{Dialog>/title}"
+		class="sapUiPopupWithPadding"
+		items="{Dialog>/list}"
+		search="selectDialogSearch"
+		confirm="selectDialogConfirm"
+    >
+		<StandardListItem
+			title="{Dialog>code}"
+			description="{Dialog>name}" />
+	</SelectDialog>
+</core:FragmentDefinition>

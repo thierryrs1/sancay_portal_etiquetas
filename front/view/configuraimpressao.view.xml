@@ -1,0 +1,198 @@
+<mvc:View
+    xmlns:mvc="sap.ui.core.mvc"
+    controllerName="sps.wms.controller.configuraimpressao"
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core"
+    xmlns:data="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1"
+    xmlns:l="sap.ui.layout"
+    xmlns:t="sap.ui.table">
+  <Page
+      id="pageView"
+      busyIndicatorDelay="0"
+      showHeader="true"
+      title="Configura Impressão : {Data>/CompanyName}"
+      showFooter="true"
+      showNavButton="true"
+      navButtonPress="onBack">
+    <headerContent>
+      <Toolbar class="sapMTBHeader-CTX">
+        <Button
+            text="Sair"
+            type="Up"
+            icon="sap-icon://log"
+            iconFirst="true"
+            width="auto"
+            enabled="true"
+            visible="true"
+            press="onLogout" />
+      </Toolbar>
+    </headerContent>
+    <HBox class="sapUiSmallMargin">
+      <t:Table
+          id="tblTipoEtq"
+          rows="{TipoEtq>/list}"
+          selectionMode="Single"
+          selectionBehavior="Row"
+          rowSelectionChange="tipoEtqSelected"
+          alternateRowColors="true"
+          visibleRowCount="12"
+          width="100%"
+          rowHeight="48">
+          <t:extension>
+            <Title text="Tipos Etiquetas" class="sapUiTinyMarginTop"/>
+          </t:extension>
+        <t:columns>
+          <t:Column width="30%">
+            <Label
+                text="Tipo"
+                textAlign="Left"
+                width="100%" />
+            <t:template>
+              <HBox>
+                <Button
+                    icon="sap-icon://add"
+                    press="addTipoEtq"
+                    visible="{= ${TipoEtq>tipoEtq}===null}" />
+                <Input
+                    width="100%"
+                    visible="{= ${TipoEtq>tipoEtq}!==null}"
+                    value="{TipoEtq>tipoEtq}" />
+              </HBox>
+            </t:template>
+          </t:Column>
+          <t:Column width="35%">
+            <Label
+                text="PRN"
+                textAlign="Left"
+                width="100%" />
+            <t:template>
+              <Input
+                  width="100%"
+                  visible="{= ${TipoEtq>tipoEtq}!==null}"
+                  value="{TipoEtq>pathPrn}" />
+            </t:template>
+          </t:Column>
+          <t:Column width="35%">
+            <Label
+                text="Procedure"
+                textAlign="Left"
+                width="100%" />
+            <t:template>
+              <Select
+                  forceSelection="true"
+                  selectedKey="{TipoEtq>procedure}"
+                  visible="{= ${TipoEtq>tipoEtq}!==null}"
+                  width="100%"
+                  items="{
+                    path: 'Procedures>/list',
+                    templateShareable: true
+                }">
+                <core:Item
+                    key="{Procedures>procedure}"
+                    text="{Procedures>procedure}" />
+              </Select>
+            </t:template>
+          </t:Column>
+          <t:Column width="4em">
+            <t:template>
+              <Button
+                  icon="sap-icon://delete"
+                  press="deleteTipoEtq"
+                  visible="{= ${TipoEtq>tipoEtq}!==null}" />
+            </t:template>
+          </t:Column>
+        </t:columns>
+      </t:Table>
+      <Label class="sapUiMediumMargin" />
+      <t:Table
+          id="tblTipoImp"
+          rows="{TipoImp>/list}"
+          selectionMode="None"
+          alternateRowColors="true"
+          visibleRowCount="12"
+          width="100%"
+          rowHeight="48">
+          <t:extension>
+            <Title text="Tipo x Impressoras" class="sapUiTinyMarginTop"/>
+          </t:extension>
+        <t:columns>
+          <t:Column width="12rem">
+            <Label
+                text="Tipo"
+                textAlign="Left"
+                width="100%" />
+            <t:template>
+              <HBox>
+                <Button
+                    icon="sap-icon://add"
+                    press="addTipoImp"
+                    visible="{= ${TipoImp>tipoEtq}===null}" />
+                <Label
+                    visible="{= ${TipoImp>tipoEtq}!==null}"
+                    text="{TipoImp>tipoEtq}" />
+              </HBox>
+            </t:template>
+          </t:Column>
+          <t:Column>
+            <Label
+                text="Impressora"
+                textAlign="Left"
+                width="100%" />
+            <t:template>
+              <Select
+                  forceSelection="true"
+                  selectedKey="{TipoImp>impressora}"
+                  visible="{= ${TipoImp>tipoEtq}!==null}"
+                  width="100%"
+                  items="{
+                    path: 'Impressoras>/list',
+                    templateShareable: true
+                }">
+                <core:Item
+                    key="{Impressoras>name}"
+                    text="{Impressoras>name}" />
+              </Select>
+            </t:template>
+          </t:Column>
+          <t:Column width="6rem">
+            <Label
+                text="Padrão"
+                textAlign="Left"
+                width="100%" />
+            <t:template>
+              <CheckBox
+                  selected="{TipoImp>defaultChk}"
+                  visible="{= ${TipoImp>tipoEtq}!==null}" />
+            </t:template>
+          </t:Column>
+          <t:Column width="4em">
+            <t:template>
+              <Button
+                  icon="sap-icon://delete"
+                  press="deleteTipoImp"
+                  visible="{= ${TipoImp>tipoEtq}!==null}" />
+            </t:template>
+          </t:Column>
+        </t:columns>
+      </t:Table>
+    </HBox>
+	<Button
+      text="Edita Regras"
+      type="Default"
+      icon="sap-icon://edit"
+      press="onEditaRegraPressed" 
+      class="sapUiSmallMargin"/>	   
+    <footer>
+      <OverflowToolbar width="100%">
+        <content>
+          <ToolbarSpacer />
+          <Button
+              text="Gravar"
+              press="onSavePressed"
+              type="Accept"
+              icon="sap-icon://save" />
+        </content>
+      </OverflowToolbar>
+    </footer>
+  </Page>
+</mvc:View>

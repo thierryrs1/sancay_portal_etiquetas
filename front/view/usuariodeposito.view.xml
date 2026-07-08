@@ -1,0 +1,85 @@
+<mvc:View
+    xmlns:mvc="sap.ui.core.mvc"
+    controllerName="sps.wms.controller.usuariodeposito"
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core"
+    xmlns:data="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1"
+    xmlns:layout="sap.ui.layout"
+    xmlns:f="sap.ui.layout.form"
+    xmlns:t="sap.ui.table">
+  <Page
+      id="pageView"
+      busyIndicatorDelay="0"
+      showHeader="true"
+      title="Usuário x Depósito : {Data>/CompanyName}"
+      showFooter="true"
+      showNavButton="true"
+      navButtonPress="onBack">
+    <headerContent>
+      <Toolbar class="sapMTBHeader-CTX">
+        <Button
+            text="Sair"
+            type="Up"
+            icon="sap-icon://log"
+            iconFirst="true"
+            width="auto"
+            enabled="true"
+            visible="true"
+            press="onLogout" />
+      </Toolbar>
+    </headerContent>
+    <t:Table
+        id="tblList"
+        rows="{Data>/Items}"
+        selectionMode="None"
+        selectionBehavior="RowSelector"
+        alternateRowColors="true"
+        enableColumnReordering="true"
+        visibleRowCountMode="Auto"
+        width="100%"
+        enableCellFilter="true"
+        rowHeight="40"
+        rowSelectionChange="onRowSelectionChange">
+      <t:extension>
+        <f:SimpleForm
+            editable="true"
+            layout="ResponsiveGridLayout"
+            labelSpanL="4"
+            labelSpanM="4"
+            adjustLabelSpan="false"
+            emptySpanL="2"
+            emptySpanM="0"
+            columnsL="2"
+            columnsM="2"
+            singleContainerFullSize="false">
+          <f:content>
+            <Label text="Usuário" />
+            <Select
+                forceSelection="false"
+                selectedKey="{Data>/login}"
+                maxWidth="30rem"
+                items="{Logins>/list}"
+                change="carregaDados">
+              <core:Item
+                  key="{Logins>login}"
+                  text="{Logins>login}" />
+            </Select>
+          </f:content>
+        </f:SimpleForm>
+      </t:extension>
+      <t:columns></t:columns>
+    </t:Table>
+    <footer>
+      <OverflowToolbar width="100%">
+        <content>
+          <ToolbarSpacer />
+          <Button
+              text="Gravar"
+              press="onSavePressed"
+              type="Accept"
+              icon="sap-icon://save" />
+        </content>
+      </OverflowToolbar>
+    </footer>
+  </Page>
+</mvc:View>

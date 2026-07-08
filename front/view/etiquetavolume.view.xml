@@ -1,0 +1,130 @@
+<mvc:View
+  xmlns:mvc="sap.ui.core.mvc"
+  controllerName="sps.wms.controller.etiquetavolume"
+  xmlns="sap.m"
+  xmlns:core="sap.ui.core"
+  xmlns:data="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1"
+  xmlns:layout="sap.ui.layout"
+  xmlns:f="sap.ui.layout.form"
+  xmlns:t="sap.ui.table"
+>
+  <Page
+    id="pageView"
+    busyIndicatorDelay="0"
+    showHeader="true"
+    title="Re/Impressão Etiqueta : {Data>/CompanyName}"
+    showFooter="true"
+    showNavButton="true"
+    navButtonPress="onBack"
+  >
+    <headerContent>
+      <Toolbar class="sapMTBHeader-CTX">
+        <Button text="Sair" type="Up" icon="sap-icon://log" iconFirst="true" width="auto" enabled="true" visible="true" press="onLogout"/>
+      </Toolbar>
+    </headerContent>
+    <t:Table
+        id="tblList"
+        rows="{Data>/Items}"
+        selectionMode="MultiToggle"
+        selectionBehavior="RowSelector"
+        alternateRowColors="true"
+        enableColumnReordering="true"
+        visibleRowCountMode="Auto"
+        width="100%"
+        enableCellFilter="true"
+        rowHeight="40"
+        rowSelectionChange="onRowSelectionChange"
+        >
+      <t:extension>
+        <f:SimpleForm 
+                    editable="true"
+                    layout="ResponsiveGridLayout"
+                    labelSpanL="4"
+                    labelSpanM="4"
+                    adjustLabelSpan="false"
+                    emptySpanL="2"
+                    emptySpanM="0"
+                    columnsL="2"
+                    columnsM="2"
+                    singleContainerFullSize="false" >
+          <f:content>
+            <core:Title text="Parâmetros de consulta"/>
+            <Label text="Data Criação de" />
+            <DatePicker 
+                            value="{Data>/DataIni}" 
+                            valueFormat="yyyy-MM-dd"/>
+            <Label text="Data Criação até" />
+            <DatePicker 
+                            value="{Data>/DataFin}" 
+                            valueFormat="yyyy-MM-dd"/>
+            <Label text="Fornecedor" />
+            <ComboBox 
+                            selectedKey="{Data>/CardCode}"
+                            maxWidth="30rem"
+                            items="{Fornecedores>/Items}">
+              <core:Item key="{Fornecedores>CardCode}" text="{Fornecedores>Text}" />
+            </ComboBox>
+            <Label text="Serial" />
+            <Input 
+                            value="{Data>/Serial}" />
+            <Label text="Inclui vol. c/ etq. fornecedor" />
+            <Switch customTextOn="Sim" customTextOff="Não" state="{Data>/IncluiEtiqForn}" />
+            
+            <core:Title />
+            <Label text="Item" />
+            <Input 
+                            value="{Data>/ItemCode}" />
+            
+            <Label text="Lote" />
+            <Input 
+                            value="{Data>/Lote}" />
+            <Label text="Tipo Etiqueta" />                            
+            <Select 
+                            forceSelection="false"
+                            selectedKey="{Data>/tipoEtq}"
+                            maxWidth="30rem"
+                            items="{TiposEtiqueta>/Items}">
+              <core:Item key="{TiposEtiqueta>tipoEtq}" text="{TiposEtiqueta>tipoEtq}" />
+            </Select>
+            <Label text="Visualiza volumes" />
+            <Switch customTextOn="Sim" customTextOff="Não" state="{Data>/VisualizaVol}" />
+          </f:content>
+          <f:content>
+            <core:Title />
+            <HBox>
+              <Button 
+                            text="Filtrar" 
+                            class="sapUiTinyMarginEnd"
+                            width="125px"
+                            press="onFilter" />
+              <Button 
+                            text="Limpar" 
+                            class="sapUiTinyMarginEnd"
+                            width="125px"
+                            press="onClearForm" />
+            </HBox>
+            <core:Title />
+            <Label text="Impressora"/>
+            <Select
+                            forceSelection="false"
+                            selectedKey="{Data>/Impressora}"
+                            maxWidth="30rem"
+                            items="{Impressoras>/Items}">
+              <core:Item key="{Impressoras>Impressora}" text="{Impressoras>Impressora}" />
+            </Select>
+          </f:content>
+        </f:SimpleForm>
+      </t:extension>
+      <t:columns></t:columns>
+    </t:Table>
+    <footer>
+      <OverflowToolbar width="100%" >
+        <content>
+          <ToolbarSpacer />
+          <Button text="Imprimir" press="onPrintPressed" type="Accept" icon="sap-icon://print"/>
+          <Button text="Visualizar" press="onVisualizarPressed" type="Accept" icon="sap-icon://print"/>
+        </content>
+      </OverflowToolbar>
+    </footer>
+  </Page>
+</mvc:View>

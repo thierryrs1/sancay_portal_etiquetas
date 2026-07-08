@@ -1,0 +1,178 @@
+<mvc:View
+    xmlns:mvc="sap.ui.core.mvc"
+    controllerName="sps.wms.controller.home"
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core"
+    xmlns:data="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1"
+    xmlns:layout="sap.ui.layout"
+    xmlns:f="sap.ui.layout.form"
+    xmlns:t="sap.ui.table">
+  <Page
+      id="pageView"
+      busyIndicatorDelay="0"
+      showHeader="true"
+      title="Portal WMS : {Data>/CompanyName}"
+      showFooter="true"
+      showNavButton="false"
+      navButtonPress="onBack">
+    <headerContent>
+      <Toolbar class="sapMTBHeader-CTX">
+        <Button
+            text="Sair"
+            type="Up"
+            icon="sap-icon://log"
+            iconFirst="true"
+            width="auto"
+            enabled="true"
+            visible="true"
+            press="onLogout" />
+      </Toolbar>
+    </headerContent>
+    <VBox>
+      <Title
+          text="Configurações Sistema"
+          titleStyle="H3"
+          class="sapUiSmallMarginTop sapUiTinyMarginBegin"
+          visible="{= ${Data>/Configura_Impressao} || ${Data>/Permissoes} || ${Data>/Usuario_Deposito} || ${Data>/Rotas}}" />
+      <FlexBox
+          alignItems="Center"
+          alignContent="Center"
+          direction="Row"
+          renderType="Bare"
+          wrap="Wrap"
+          width="100%"
+          displayInline="true"
+          fitContainer="true"
+          visible="{= ${Data>/Configura_Impressao} || ${Data>/Permissoes} || ${Data>/Usuario_Deposito} || ${Data>/Rotas}}">
+        <items>
+          <GenericTile
+              visible="{Data>/Permissoes}"
+              class="sapUiTinyMarginBegin sapUiTinyMarginTop tileLayout"
+              header="Permissões"
+              press="onClickPermissoes">
+            <TileContent>
+              <ImageContent src="sap-icon://role" />
+            </TileContent>
+          </GenericTile>
+          <!--<GenericTile
+              visible="{Data>/Configuracao_WMS}"
+              class="sapUiTinyMarginBegin sapUiTinyMarginTop tileLayout"
+              header="Configuração WMS"
+              press="onClickConfiguracaoWms">
+            <TileContent>
+              <ImageContent src="sap-icon://settings" />
+            </TileContent>
+          </GenericTile>
+          <GenericTile
+              visible="{Data>/Usuario_Deposito}"
+              class="sapUiTinyMarginBegin sapUiTinyMarginTop tileLayout"
+              header="Usuário x Depósito"
+              press="onClickUsuarioDeposito">
+            <TileContent>
+              <ImageContent src="sap-icon://account" />
+            </TileContent>
+          </GenericTile>
+          <GenericTile
+              visible="{Data>/Rotas}"
+              class="sapUiTinyMarginBegin sapUiTinyMarginTop tileLayout"
+              header="Rotas"
+              press="onClickRotas">
+            <TileContent>
+              <ImageContent src="sap-icon://journey-change" />
+            </TileContent>
+          </GenericTile>-->
+          <GenericTile
+              visible="{Data>/Configura_Impressao}"
+              class="sapUiTinyMarginBegin sapUiTinyMarginTop tileLayout"
+              header="Configura Impressão"
+              press="onClickConfiguraImpressao">
+            <TileContent>
+              <ImageContent src="sap-icon://developer-settings" />
+            </TileContent>
+          </GenericTile>
+        </items>
+      </FlexBox>
+      <Title
+          text="Impressão"
+          titleStyle="H3"
+          class="sapUiSmallMarginTop sapUiTinyMarginBegin"
+          visible="{= ${Data>/Etiqueta_Volume} || ${Data>/Etiqueta_Palete} || ${Data>/Etiqueta_Expedicao}}" />
+      <FlexBox
+          alignItems="Center"
+          alignContent="Center"
+          direction="Row"
+          renderType="Bare"
+          wrap="Wrap"
+          width="100%"
+          displayInline="true"
+          fitContainer="true"
+          visible="{= ${Data>/Etiqueta_Volume} || ${Data>/Etiqueta_Palete} || ${Data>/Etiqueta_Expedicao}}">
+        <items>
+          <GenericTile
+              visible="{Data>/Etiqueta_Volume}"
+              class="sapUiTinyMarginBegin sapUiTinyMarginTop tileLayout"
+              header="Impressão Etiqueta"
+              press="onClickEtiquetaVolume">
+            <TileContent>
+              <ImageContent src="sap-icon://print" />
+            </TileContent>
+          </GenericTile>
+          <!--<GenericTile
+              visible="{Data>/Etiqueta_Palete}"
+              class="sapUiTinyMarginBegin sapUiTinyMarginTop tileLayout"
+              header="Impressão Etiqueta Palete"
+              press="onClickEtiquetaPalete">
+            <TileContent>
+              <ImageContent src="sap-icon://print" />
+            </TileContent>
+          </GenericTile>
+          <GenericTile
+              visible="{Data>/Etiqueta_Expedicao}"
+              class="sapUiTinyMarginBegin sapUiTinyMarginTop tileLayout"
+              header="Impressão Etiqueta Expedição"
+              press="onClickEtiquetaExpedicao">
+            <TileContent>
+              <ImageContent src="sap-icon://print" />
+            </TileContent>
+          </GenericTile> -->
+        </items>
+      </FlexBox>
+      <!--<Title
+          text="Picking"
+          titleStyle="H3"
+          class="sapUiSmallMarginTop sapUiTinyMarginBegin"
+          visible="{Data>/Gerenciamento_Picking}" />
+      <FlexBox
+          alignItems="Center"
+          alignContent="Center"
+          direction="Row"
+          renderType="Bare"
+          wrap="Wrap"
+          width="100%"
+          displayInline="true"
+          fitContainer="true"
+          visible="{Data>/Gerenciamento_Picking}" >
+        <items>
+          <GenericTile
+              visible="{Data>/Gerenciamento_Picking}"
+              class="sapUiTinyMarginBegin sapUiTinyMarginTop tileLayout"
+              header="Solicita Picking"
+              press="onClickSolicitaPicking">
+            <TileContent>
+              <ImageContent src="sap-icon://add-activity" />
+            </TileContent>
+          </GenericTile>
+          <GenericTile
+              visible="{Data>/Gerenciamento_Picking}"
+              class="sapUiTinyMarginBegin sapUiTinyMarginTop tileLayout"
+              header="Cancela Picking"
+              press="onClickCancelaPicking">
+            <TileContent>
+              <ImageContent src="sap-icon://delete" />
+            </TileContent>
+          </GenericTile>
+        </items>
+      </FlexBox>-->
+    </VBox>
+  </Page>
+</mvc:View>

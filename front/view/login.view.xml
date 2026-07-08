@@ -1,0 +1,101 @@
+<mvc:View
+    controllerName="sps.wms.controller.login"
+	  xmlns:l="sap.ui.layout"
+	  xmlns:core="sap.ui.core"
+    xmlns:mvc="sap.ui.core.mvc"
+	  xmlns:html="http://www.w3.org/1999/xhtml"
+	  xmlns="sap.m"
+    xmlns:f="sap.ui.layout.form"
+	  displayBlock="true"
+    busyIndicatorDelay="0"
+    busy="false"
+    height="100%">
+    <Page
+        id="loginViewPage"
+        class="loginBackground"
+        showHeader="false" >
+        <content>
+            <l:VerticalLayout
+                width="100%">
+                <l:BlockLayout>
+                    <l:BlockLayoutRow >
+                        <l:BlockLayoutCell id="topLogo">
+                            <FlexBox
+                                alignItems="Start"
+                                justifyContent="SpaceBetween"
+                                width="100%">
+                                <items>
+
+                                </items>
+                            </FlexBox>
+                        </l:BlockLayoutCell>
+			        </l:BlockLayoutRow>
+                    <l:BlockLayoutRow >
+                        <l:BlockLayoutCell>
+                            <FlexBox
+                                alignItems="Center"
+                                justifyContent="Center"
+                                height="100%">
+                                <items>
+                                    <html:div class="boxLogin">
+                                        <Image
+                                            class="sapUiSmallMargin"
+                                            src="../front/assets/img/logo.png"
+                                            width="12rem">
+                                            <layoutData>
+                                                <FlexItemData growFactor="1" />
+                                            </layoutData>
+                                        </Image>
+
+                                        <Label
+                                            text="Portal Etiqueta"
+                                            design="Bold" 
+                                            class="morepadding"/>
+                                        
+                                        <Input
+                                            placeholder="Usuário"
+                                            id="userInput"
+                                            value="{
+                                                path: 'login>/UserName',
+                                                type : 'sap.ui.model.type.String',
+                                                constraints : {
+                                                    minLength: 1
+                                                }
+                                            }"
+                                            change="onUserChange"
+                                            width="15rem"/>
+                                        <Input
+                                            placeholder="Senha"
+                                            id="passwordInput"
+                                            value="{
+                                                path: 'login>/Password',
+                                                type : 'sap.ui.model.type.String',
+                                                constraints : {
+                                                    minLength: 1
+                                                }
+                                            }"
+                                            type="Password"
+                                            submit="onLoginPress"
+                                            width="15rem" />
+                                            
+                                        <Label
+                                            text="Entre com usuário e senha"
+                                        />
+
+                                        <Button
+                                            text="Login"
+                                            type="Emphasized"
+                                            width="15rem"
+                                            press="onLoginPress"
+                                            class="sapUiSmallMargin button-red" />
+
+                                    </html:div>
+                                </items>
+                            </FlexBox>
+                        </l:BlockLayoutCell>
+			              </l:BlockLayoutRow>
+                </l:BlockLayout>
+            </l:VerticalLayout>
+        </content>
+    </Page>
+</mvc:View>

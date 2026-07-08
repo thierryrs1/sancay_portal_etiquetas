@@ -1,0 +1,264 @@
+const fs = require("fs");
+const errorService = require("./ErrorService");
+const { log, logDebug, logError } = require("./LogService");
+const { ServiceLayer, DirectDb } = require("sps-sap-interface");
+const iconv = require('iconv-lite');
+const printer = require('@thiagoelg/node-printer');
+const axios = require ('axios');
+
+class PrintService {
+
+  async imprimeVolumes(impressora, tipo, confVolumesLineKeys, visualizar, numVolume) {
+    logDebug(`start imprimeVolumes impressora=${impressora}, volumeIds=${confVolumesLineKeys}`);
+    if ((confVolumesLineKeys === '' && tipo !== 'SALDO' ) || impressora === '') {
+      return;
+    }
+    let pdf = await this.imprimeEtq(impressora, tipo, [ confVolumesLineKeys ], visualizar, numVolume);
+    logDebug("end imprimeVolumes");
+    return pdf;
+  }
+
+  async imprimePaletes(printJob) {
+    const { paletes, impressoraPalete } = printJob;
+
+    if (!paletes || paletes.length == 0) {
+      return;
+    }
+
+    for (let i = 0; i < paletes.length; i++) {
+      const palete = paletes[i];
+      await this.imprimeEtq(impressoraPalete, "PALETE", [ palete ]);
+    }
+  }
+
+  async imprimeEtiquetasExpedicao(printJob) {
+    const { impressora, docs, visualizar } = printJob;
+    for (let i = 0; i < docs.length; i++) {
+      const { docType, docEntry } = docs[i];
+      const query = `SELECT FN_SPS_WMS_ETIQ_REGRA('EXPEDICAO', null, null, null, null, null, ?, ?, null) "tipoEtq" FROM DUMMY;`;
+      const tipoEtqRes = await DirectDb.executeQuery(query, [ docType, docEntry ]);
+      await this.imprimeEtq(impressora, tipoEtqRes[0].tipoEtq, [ docType, docEntry ], visualizar);
+    }
+  }
+
+  async imprimeEtq(impressora, tipo, parms, visualizar, numVol) {
+    if (!tipo || tipo == "") {
+      const msg = "Tipo de impressão não informado";
+      logError(`imprimeEtq: ${msg}`);
+      throw new Error(msg);
+    }
+    if (!Array.isArray(parms)) {
+      const msg = "Parâmetros incorretos: parms não é um array";
+      logError(`imprimeEtq: ${msg}`);
+      throw new Error(msg);
+    }
+    logDebug(`start imprimeEtq impressora=${impressora}, tipo=${tipo}, parms=[${parms.join(", ")}]`);
+    // se impressora não informada, pega a primeira
+    let query = `
+      SELECT TOP 1
+      TI."impressora",
+      TE."pathPrn",
+      TE."procedure"
+      FROM
+        SPS_TIPO_IMP TI
+        JOIN SPS_TIPO_ETQ TE ON TE."tipoEtq" = TI."tipoEtq"
+      WHERE
+        TI."tipoEtq" = ?
+        AND (TI."impressora" = ? OR ? = '')
+      ORDER BY TI."default" DESC;
+    `;
+    logDebug("query printConf");
+    const printConf = await DirectDb.executeQuery(query, [tipo, impressora, impressora]);
+    
+    if (!printConf || printConf.length == 0) {
+      const msg = `Impressora ${impressora} não definida para tipo ${tipo}`;
+      logError(`imprimeEtq: ${msg}`);
+      throw new Error(msg);
+    }
+    const { pathPrn, procedure } = printConf[0];
+    if (!pathPrn || pathPrn == "") {
+      const msg = `Template de impressão não definido para tipo ${tipo}`;
+      logError(`imprimeEtq: ${msg}`);
+      throw new Error(msg);
+    }
+    if (!procedure || procedure == "") {
+      const msg = `Procedure de impressão não definida para tipo ${tipo}`;
+      logError(`imprimeEtq: ${msg}`);
+      throw new Error(msg);
+    }
+
+    logDebug("query printConfKit");
+    query = `
+      SELECT TOP 1
+      TE."pathPrn"
+      FROM
+      SPS_TIPO_ETQ TE
+      WHERE
+      TE."tipoEtq" = ?;
+    `;
+    let pathPrnKit;
+    const printConfKit = await DirectDb.executeQuery(query, [`${tipo} KIT`]);
+    if (printConfKit && printConfKit.length > 0) {
+      pathPrnKit = printConfKit[0].pathPrn;
+    }
+
+    impressora = printConf[0].impressora;
+    let template = pathPrn;
+    let templateKit = pathPrnKit;
+    let dadosEtq;
+    try {
+      let newProcedure = '';
+      if (numVol != '' && numVol != undefined){
+        newProcedure = procedure+'_VOL';
+        parms.push(numVol);
+      } else {
+        newProcedure = procedure;
+      }
+      logDebug(`executando ${newProcedure}(${parms.join(", ")})`);
+      dadosEtq = await DirectDb.executeProcedure(newProcedure, parms);
+    } catch (err) {
+      const msg = `Erro executando ${newProcedure}(${parms.join(", ")}): ${err.message}`;
+      logError(`imprimeEtq: ${msg}`);
+      throw new Error(msg);
+    }
+    if (!dadosEtq || dadosEtq.length == 0) {
+      const msg = `${newProcedure}(${parms.join(", ")}) não retornou resultados`;
+      logError(`imprimeEtq: ${msg}`);
+      throw new Error(msg);
+    }
+    logDebug("substituindo campos e enviando à impressora");
+    for (let i = 0; i < dadosEtq.length; i++) {
+      const dados = dadosEtq[i];
+      if ("U_SPS_Vol_Kit" in dados && +(dados.U_SPS_Vol_Kit) <= 1) {
+        template = template.replace("@KITNN", "");
+      } else {
+        template = template.replace("@KITNN", `KIT 1/${dados.U_SPS_Vol_Kit}`);
+      }
+      let prn = this.populaPrn(template, dados);
+      logDebug(prn);
+      if (visualizar){
+        let pdf = this.visualizarEtiqueta(prn);
+        return pdf;
+      }
+      else {
+        prn = iconv.encode(prn, "latin1");
+        this.sendToPrinter(impressora, prn);
+      }
+      if ("U_SPS_Vol_Kit" in dados && +(dados.U_SPS_Vol_Kit) > 1) {
+        for (let j = 2; j <= +dados.U_SPS_Vol_Kit; j++) {
+          let prn = templateKit.replace("@KITNN", `KIT ${j}/${dados.U_SPS_Vol_Kit}`);
+          prn = this.populaPrn(prn, dados);
+          logDebug(prn);
+          if (visualizar){
+            let pdf = this.visualizarEtiqueta(prn);
+            return pdf;
+          }
+          else {
+            prn = iconv.encode(prn, "latin1");
+            this.sendToPrinter(impressora, prn);
+          }
+        }
+      }
+
+    }
+    logDebug("end imprimeEtq");
+  }
+
+  async visualizarEtiqueta(prn) {
+    try {
+
+      let width = prn.match(/(\^PW)\d+/)[0].replace('^PW','');
+      let height = prn.match(/(\^LL)\d+/)[0].replace('^LL','');
+
+      width = width / 600;
+      height = height / 600;
+
+      const config = {
+        encoding: null,
+        responseType: 'arraybuffer',
+        reponseEncoding: 'binary',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+          'Accept': 'application/pdf'
+        }
+      }
+
+      const url = `http://api.labelary.com/v1/printers/24dpmm/labels/${width > 15 ? 15 : width}x${height > 15 ? 15 : height}/0/`;
+      const filename = process.env.CAMINHO_PDF + process.env.NOME_PDF;
+      let res = await axios.post(
+        url,
+        prn,
+        config,
+      ).then((response)=>{
+          fs.writeFileSync(filename, response.data, 'binary');
+      });
+
+      return filename;
+    } catch (ex) {
+        const msg = `Erro obtendo pré-visualização Etiquetas Produção: ${ex.message}`;
+        logError(`visualizaEtq: ${msg}`);
+        throw new Error(msg);
+    }
+  }
+
+  sendToPrinter(impressora, prn) {
+    const me = this;
+    printer.printDirect({
+        data: prn,
+        printer: impressora,
+        type: "RAW",
+        success: function () {
+            logDebug(`enviado à impressora ${impressora}`);
+        },
+        error: function (err) {
+            logError(err);
+        }
+    });
+  }
+
+  populaPrn(template, dados) {
+    const keys = Object.keys(dados);
+    keys.sort((a, b) => b.length - a.length); // replace campos com nome maior primeiro, evita substring
+    let prn = template;
+    for (let i = 0; i < keys.length; i++) {
+      const key = keys[i];
+      if (key.startsWith("1234567890")) { // para ean, não aceita conteúdo não numérico
+        prn = this.replaceField(prn, `${key}`, `${dados[key]}`);
+      } else {
+        prn = this.replaceField(prn, `<${key}>`, `${dados[key]}`, `@${key}`);
+      }
+      
+    }
+    return prn;
+  }
+
+  formatNumber(n) {
+    if (!/^[0-9,.]+$/.test(n)) {
+      return n;
+    }
+    let a = `${+n}`; // garante que assume como string
+    a = a.replace(/,/, ".");
+    //a = a.replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ","); // virgula a cada 3 digitos inteiros
+    a = a.replace(/(?<=\.\d+?)0*$/, ""); // remove zeros à esquerda
+    a = a.replace(/\.$/, ""); // remove ponto se não sobrou decimal
+    return a;
+  }
+
+  replaceField(template, field, val, testField) {
+    if (process.env.CAMPOS_NUMERICOS_ETIQUETA_REFORMATAR && process.env.CAMPOS_NUMERICOS_ETIQUETA_REFORMATAR != "") {
+      const frex = new RegExp(`^(${process.env.CAMPOS_NUMERICOS_ETIQUETA_REFORMATAR})$`);
+      if (frex.test(testField || field)) {
+        val = this.formatNumber(val);
+      }
+    }
+    const isEnclosed = field.startsWith("<") && field.endsWith(">");
+    const suffix = isEnclosed ? "()" : "(\\W|$)";
+    const rex = new RegExp(field + suffix, "gi");
+    //@key, seguido de qualquer "coisa" não-word (que não seja a-zA-Z0-9_), todas ocorrencias (g)
+    //isso evita que um campo @BLABLA seja substituido no @BLABLA1
+    return template.replace(rex, `${val}$1`); // substitui pelo valor seguido da "coisa"
+  }
+
+}
+
+module.exports = new PrintService;
