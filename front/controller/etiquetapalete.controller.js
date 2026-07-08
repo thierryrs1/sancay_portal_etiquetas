@@ -11,7 +11,8 @@ sap.ui.define(
         if (!perms.Etiqueta_Palete) {
           this.navTo("home");
         }
-        this.setModel(new JSONModel(), "Data");
+        const todayStr = new Date(new Date().getTime() - new Date().getTimezoneOffset() * 60000).toISOString().split('T')[0];
+        this.setModel(new JSONModel({ DataIni: "1900-01-01", DataFin: todayStr }), "Data");
         this.setModel(new JSONModel(), "ImpressorasPalete");
 
         this.setModelProperty("Data", "YesNo", [
@@ -189,7 +190,8 @@ sap.ui.define(
       },
 
       onClearForm: function () {
-        this.setModel(new JSONModel(), "Data");
+        const todayStr = new Date(new Date().getTime() - new Date().getTimezoneOffset() * 60000).toISOString().split('T')[0];
+        this.setModel(new JSONModel({ DataIni: "1900-01-01", DataFin: todayStr }), "Data");
         this.getView().byId("tblList").clearSelection();
         const tblList = this.getView().byId("tblList");
         const aColumns = tblList.getColumns();
