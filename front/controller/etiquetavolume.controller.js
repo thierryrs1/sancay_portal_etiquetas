@@ -14,6 +14,7 @@ sap.ui.define(
         const todayStr = new Date(new Date().getTime() - new Date().getTimezoneOffset() * 60000).toISOString().split('T')[0];
         this.setModel(new JSONModel({ DataIni: "1900-01-01", DataFin: todayStr }), "Data");
         this.setModel(new JSONModel(), "TiposEtiqueta");
+        this.setModel(new JSONModel(), "Estufas");
         this.setModel(new JSONModel(), "Impressoras");
         this.setModel(new JSONModel(), "Fornecedores");
         this.setModelProperty("Data", "YesNo", [
@@ -32,8 +33,19 @@ sap.ui.define(
         ]);
         this.setModelProperty("Data", "CompanyName", sessionStorage.getItem("companyName"));
         this.carregaTiposEtiqueta();
+        this.carregaEstufas();
         this.carregaImpressoras();
         this.carregaFornecedores();
+      },
+
+      async carregaEstufas() {
+        try {
+          const estufas = await this.serverService.get("/etiqueta/getEstufas");
+          estufas.splice(0, 0, { APLATZ_ID: "" });
+          this.setModelProperty("Estufas", "Items", estufas);
+        } catch (err) {
+          this.showExceptionMessageBox("Erro", "getEstufas", err);
+        }
       },
 
       async carregaTiposEtiqueta() {
@@ -93,10 +105,11 @@ sap.ui.define(
             data.Lote || "",
             data.DataIni || "",
             data.DataFin || "",
-            data.CardCode || "",
             data.tipoEtq || "",
-            data.Serial || "",
-            data.VisualizaVol || false
+            data.BoxCode || "",
+            data.PalletCode || "",
+            data.Estufa || "",
+            data.OP || ""
           ];
           const list = await this.serverService.post("/etiqueta/getListaImpressoesVolume", {
             filter,

@@ -57,20 +57,8 @@
             <DatePicker 
                             value="{Data>/DataFin}" 
                             valueFormat="yyyy-MM-dd"/>
-            <Label text="Fornecedor" />
-            <ComboBox 
-                            selectedKey="{Data>/CardCode}"
-                            maxWidth="30rem"
-                            items="{Fornecedores>/Items}">
-              <core:Item key="{Fornecedores>CardCode}" text="{Fornecedores>Text}" />
-            </ComboBox>
-            <Label text="Serial" />
-            <Input 
-                            value="{Data>/Serial}" />
-            <Label text="Inclui vol. c/ etq. fornecedor" />
-            <Switch customTextOn="Sim" customTextOff="Não" state="{Data>/IncluiEtiqForn}" />
+
             
-            <core:Title />
             <Label text="Item" />
             <Input 
                             value="{Data>/ItemCode}" />
@@ -78,6 +66,24 @@
             <Label text="Lote" />
             <Input 
                             value="{Data>/Lote}" />
+            <Label text="Ordem de Produção" />
+            <Input 
+                            value="{Data>/OP}" />
+            <Label text="Estufa" />
+            <Select 
+                            forceSelection="false"
+                            selectedKey="{Data>/Estufa}"
+                            maxWidth="30rem"
+                            items="{Estufas>/Items}">
+              <core:Item key="{Estufas>APLATZ_ID}" text="{Estufas>APLATZ_ID}" />
+            </Select>
+            <core:Title />
+            <Label text="Código da Caixa" />
+            <Input 
+                            value="{Data>/BoxCode}" />
+            <Label text="Código do Pallet" />
+            <Input 
+                            value="{Data>/PalletCode}" />
             <Label text="Tipo Etiqueta" />                            
             <Select 
                             forceSelection="false"

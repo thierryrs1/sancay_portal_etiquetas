@@ -6,6 +6,15 @@ const errors = require("./ErrorService");
 
 class EtiquetaService {
 
+  async getEstufas() {
+    try {
+      const res = await DirectDb.executeQuery(`SELECT "APLATZ_ID" FROM "BEAS_APLATZ" WHERE "APLATZ_ID" LIKE 'ESTUFA_%' ORDER BY TO_INT(SUBSTR_AFTER("APLATZ_ID", '_'))`);
+      return res;
+    } catch (ex) {
+      throw new Error(`Erro obtendo lista de estufas: ` + errors.getError(ex));
+    }
+  }
+
   async getTiposEtiquetaVolume() {
     try {
       const res = await DirectDb.executeProcedure("SP_SPS_PORTAL_TIPOS_ETQ_VOLUME");

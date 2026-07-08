@@ -3,10 +3,18 @@ const etiquetaService = require('../services/EtiquetaService');
 
 class EtiquetaController {
   
+  async getEstufas(req, res) {
+    try {
+      const result = await etiquetaService.getEstufas();
+      res.send(result);
+    } catch (err) {
+      sendError(res, err);
+    }
+  }
+  
   async getListaImpressoesVolume(req, res) {
     try {
       const { filter } = req.body;
-      filter.push(req.userInfo.username);
       const result = await etiquetaService.getListaImpressoesVolume(filter);
       res.send(result);
     } catch (err) {

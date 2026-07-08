@@ -35,7 +35,7 @@ routes.use('/etiqueta', authMiddleware);
 
 routes.get('/etiqueta/getTiposEtiquetaVolume', etiquetaController.getTiposEtiquetaVolume);
 routes.get('/etiqueta/getFornecedoresVolume', etiquetaController.getFornecedoresVolume);																	  
-
+routes.get('/etiqueta/getEstufas', etiquetaController.getEstufas);
 routes.post('/etiqueta/getListaImpressoesVolume', etiquetaController.getListaImpressoesVolume);
 routes.post('/etiqueta/getListaPaletes', etiquetaController.getListaPaletes);
 routes.post('/etiqueta/getListaEtiquetasExpedicao', etiquetaController.getListaEtiquetasExpedicao);
