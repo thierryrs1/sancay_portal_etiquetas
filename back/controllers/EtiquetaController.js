@@ -11,6 +11,15 @@ class EtiquetaController {
       sendError(res, err);
     }
   }
+
+  async getOrdensProducao(req, res) {
+    try {
+      const result = await etiquetaService.getOrdensProducao();
+      res.send(result);
+    } catch (err) {
+      sendError(res, err);
+    }
+  }
   
   async getListaImpressoesVolume(req, res) {
     try {

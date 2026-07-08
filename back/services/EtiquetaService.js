@@ -15,6 +15,15 @@ class EtiquetaService {
     }
   }
 
+  async getOrdensProducao() {
+    try {
+      const res = await DirectDb.executeQuery(`SELECT DISTINCT "U_SPS_BELNR_ID" || '/' || "U_SPS_BELPOS_ID" AS "Documento" FROM "@SPS_PALLET_GROUP_L" WHERE "U_SPS_BELNR_ID" IS NOT NULL AND "U_SPS_BELPOS_ID" IS NOT NULL ORDER BY TO_INT(SUBSTR_BEFORE("Documento", '/')) DESC, TO_INT(SUBSTR_AFTER("Documento", '/')) LIMIT 5000`);
+      return res;
+    } catch (ex) {
+      throw new Error(`Erro obtendo lista de OP: ` + errors.getError(ex));
+    }
+  }
+
   async getTiposEtiquetaVolume() {
     try {
       const res = await DirectDb.executeProcedure("SP_SPS_PORTAL_TIPOS_ETQ_VOLUME");

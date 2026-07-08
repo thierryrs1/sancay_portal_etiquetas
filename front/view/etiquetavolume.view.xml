@@ -42,10 +42,10 @@
                     labelSpanL="4"
                     labelSpanM="4"
                     adjustLabelSpan="false"
-                    emptySpanL="2"
+                    emptySpanL="0"
                     emptySpanM="0"
-                    columnsL="2"
-                    columnsM="2"
+                    columnsL="3"
+                    columnsM="3"
                     singleContainerFullSize="false" >
           <f:content>
             <core:Title text="Parâmetros de consulta"/>
@@ -57,33 +57,6 @@
             <DatePicker 
                             value="{Data>/DataFin}" 
                             valueFormat="yyyy-MM-dd"/>
-
-            
-            <Label text="Item" />
-            <Input 
-                            value="{Data>/ItemCode}" />
-            
-            <Label text="Lote" />
-            <Input 
-                            value="{Data>/Lote}" />
-            <Label text="Ordem de Produção" />
-            <Input 
-                            value="{Data>/OP}" />
-            <Label text="Estufa" />
-            <Select 
-                            forceSelection="false"
-                            selectedKey="{Data>/Estufa}"
-                            maxWidth="30rem"
-                            items="{Estufas>/Items}">
-              <core:Item key="{Estufas>APLATZ_ID}" text="{Estufas>APLATZ_ID}" />
-            </Select>
-            <core:Title />
-            <Label text="Código da Caixa" />
-            <Input 
-                            value="{Data>/BoxCode}" />
-            <Label text="Código do Pallet" />
-            <Input 
-                            value="{Data>/PalletCode}" />
             <Label text="Tipo Etiqueta" />                            
             <Select 
                             forceSelection="false"
@@ -92,8 +65,37 @@
                             items="{TiposEtiqueta>/Items}">
               <core:Item key="{TiposEtiqueta>tipoEtq}" text="{TiposEtiqueta>tipoEtq}" />
             </Select>
-            <Label text="Visualiza volumes" />
-            <Switch customTextOn="Sim" customTextOff="Não" state="{Data>/VisualizaVol}" />
+            
+            <core:Title />
+            <Label text="Item" />
+            <Input 
+                            value="{Data>/ItemCode}" />
+            <Label text="Lote" />
+            <Input 
+                            value="{Data>/Lote}" />
+            <Label text="Ordem de Produção" />
+            <ComboBox 
+                            selectedKey="{Data>/OP}"
+                            maxWidth="30rem"
+                            items="{OrdensProducao>/Items}">
+              <core:Item key="{OrdensProducao>Documento}" text="{OrdensProducao>Documento}" />
+            </ComboBox>
+
+            <core:Title />
+            <Label text="Estufa" />
+            <Select 
+                            forceSelection="false"
+                            selectedKey="{Data>/Estufa}"
+                            maxWidth="30rem"
+                            items="{Estufas>/Items}">
+              <core:Item key="{Estufas>APLATZ_ID}" text="{Estufas>APLATZ_ID}" />
+            </Select>
+            <Label text="Código da Caixa" />
+            <Input 
+                            value="{Data>/BoxCode}" />
+            <Label text="Código do Pallet" />
+            <Input 
+                            value="{Data>/PalletCode}" />
           </f:content>
           <f:content>
             <core:Title />

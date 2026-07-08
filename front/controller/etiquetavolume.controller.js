@@ -15,6 +15,7 @@ sap.ui.define(
         this.setModel(new JSONModel({ DataIni: "1900-01-01", DataFin: todayStr }), "Data");
         this.setModel(new JSONModel(), "TiposEtiqueta");
         this.setModel(new JSONModel(), "Estufas");
+        this.setModel(new JSONModel(), "OrdensProducao");
         this.setModel(new JSONModel(), "Impressoras");
         this.setModel(new JSONModel(), "Fornecedores");
         this.setModelProperty("Data", "YesNo", [
@@ -34,8 +35,19 @@ sap.ui.define(
         this.setModelProperty("Data", "CompanyName", sessionStorage.getItem("companyName"));
         this.carregaTiposEtiqueta();
         this.carregaEstufas();
+        this.carregaOrdensProducao();
         this.carregaImpressoras();
         this.carregaFornecedores();
+      },
+
+      async carregaOrdensProducao() {
+        try {
+          const ordens = await this.serverService.get("/etiqueta/getOrdensProducao");
+          ordens.splice(0, 0, { Documento: "" });
+          this.setModelProperty("OrdensProducao", "Items", ordens);
+        } catch (err) {
+          this.showExceptionMessageBox("Erro", "getOrdensProducao", err);
+        }
       },
 
       async carregaEstufas() {
