@@ -109,6 +109,11 @@
           "pattern": "configsps",
           "name": "configsps",
           "target": "configsps"
+        },
+        {
+          "pattern": "filaimpressao",
+          "name": "filaimpressao",
+          "target": "filaimpressao"
         }
       ],
       "targets": {
@@ -150,6 +155,11 @@
           "viewId": "configsps",
           "viewName": "configsps",
           "viewLevel": 1
+        },
+        "filaimpressao": {
+          "viewName": "filaimpressao",
+          "viewId": "filaimpressao",
+          "viewLevel": 2
         }
       }
     }

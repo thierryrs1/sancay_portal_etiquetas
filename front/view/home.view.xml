@@ -33,7 +33,7 @@
           text="Configurações Sistema"
           titleStyle="H3"
           class="sapUiSmallMarginTop sapUiTinyMarginBegin"
-          visible="{= ${Data>/Configura_Impressao} || ${Data>/Permissoes}}" />
+          visible="{= ${Data>/Configura_Impressao} || ${Data>/Permissoes} || ${Data>/Fila_Impressao}}" />
       <FlexBox
           alignItems="Center"
           alignContent="Center"
@@ -43,7 +43,7 @@
           width="100%"
           displayInline="true"
           fitContainer="true"
-          visible="{= ${Data>/Configura_Impressao} || ${Data>/Permissoes}}">
+          visible="{= ${Data>/Configura_Impressao} || ${Data>/Permissoes} || ${Data>/Fila_Impressao}}">
         <items>
           <GenericTile
               visible="{Data>/Permissoes}"
@@ -62,6 +62,16 @@
               press="onClickConfiguraImpressao">
             <TileContent>
               <ImageContent src="sap-icon://developer-settings" />
+            </TileContent>
+          </GenericTile>
+
+          <GenericTile
+              visible="{Data>/Fila_Impressao}"
+              class="sapUiTinyMarginBegin sapUiTinyMarginTop tileLayout"
+              header="Fila de Impressões"
+              press="onClickFilaImpressao">
+            <TileContent>
+              <ImageContent src="sap-icon://print" />
             </TileContent>
           </GenericTile>
         </items>

@@ -23,6 +23,23 @@ class PrintController {
     }
   }
 
+  async getQueues(req, res) {
+    try {
+      const result = await printService.getQueues();
+      res.send(result);
+    } catch(err) {
+      sendError(res, err);
+    }
+  }
+
+  async clearQueue(req, res) {
+    try {
+      const result = await printService.clearQueue(req.body.printerName);
+      res.send(result);
+    } catch(err) {
+      sendError(res, err);
+    }
+  }
 
 }
 

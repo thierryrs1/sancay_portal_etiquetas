@@ -35,6 +35,8 @@ routes.post('/etiqueta/getLogImpressao', etiquetaController.getLogImpressao);
 
 routes.post("/etiqueta/imprimeEtq", printController.imprimeEtq);
 routes.post("/etiqueta/imprimeVolumes", printController.imprimeVolumes);
+routes.post('/printer/getQueues', printController.getQueues);
+routes.post('/printer/clearQueue', printController.clearQueue);
 
 routes.use('/permissoes', authMiddleware);
 routes.get("/permissoes/getPermissoes", permissoesController.getPermissoes);

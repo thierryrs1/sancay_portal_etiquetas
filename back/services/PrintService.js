@@ -289,6 +289,39 @@ class PrintService {
     return template.replace(rex, `${val}$1`); // substitui pelo valor seguido da "coisa"
   }
 
+  async getQueues() {
+    return new Promise((resolve, reject) => {
+      const exec = require('child_process').exec;
+      exec('powershell -Command "Get-Printer | Select-Object Name, PrinterStatus, JobCount | ConvertTo-Json"', { maxBuffer: 1024 * 500 }, (error, stdout, stderr) => {
+        if (error) {
+          logError(`Erro getQueues: ${error.message}`);
+          resolve([]);
+          return;
+        }
+        try {
+          const printers = JSON.parse(stdout);
+          resolve(Array.isArray(printers) ? printers : [printers]);
+        } catch(e) {
+          resolve([]);
+        }
+      });
+    });
+  }
+
+  async clearQueue(printerName) {
+    return new Promise((resolve, reject) => {
+      const exec = require('child_process').exec;
+      const sanitized = String(printerName).replace(/"/g, '""');
+      exec(`powershell -Command "Get-PrintJob -PrinterName \\"${sanitized}\\" | Remove-PrintJob"`, (error, stdout, stderr) => {
+        if (error) {
+          reject(error);
+          return;
+        }
+        resolve({ success: true });
+      });
+    });
+  }
+
 }
 
 module.exports = new PrintService;
