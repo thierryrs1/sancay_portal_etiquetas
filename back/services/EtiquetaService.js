@@ -8,7 +8,7 @@ class EtiquetaService {
 
   async getEstufas() {
     try {
-      const res = await DirectDb.executeQuery(`SELECT "APLATZ_ID" FROM "BEAS_APLATZ" WHERE "APLATZ_ID" LIKE 'ESTUFA_%' ORDER BY TO_INT(SUBSTR_AFTER("APLATZ_ID", '_'))`);
+      const res = await DirectDb.executeQuery(`SELECT DISTINCT "U_SPS_Estufa" as "APLATZ_ID" FROM "@SPS_PALLET_GROUP_L" WHERE "U_SPS_Estufa" IS NOT NULL ORDER BY TO_INT(SUBSTR_AFTER("APLATZ_ID", '_'))`);
       return res;
     } catch (ex) {
       throw new Error(`Erro obtendo lista de estufas: ` + errors.getError(ex));
@@ -24,9 +24,14 @@ class EtiquetaService {
     }
   }
 
-  async getTiposEtiquetaVolume() {
+  async getTiposEtiquetaVolume(username) {
     try {
-      const res = await DirectDb.executeProcedure("SP_SPS_PORTAL_TIPOS_ETQ_VOLUME");
+      let res = await DirectDb.executeProcedure("SP_SPS_PORTAL_TIPOS_ETQ_VOLUME");
+      if (username !== 'manager') {
+        const perms = await DirectDb.executeQuery(`SELECT "etiqueta" FROM SPS_PERMISSOES_ETQ WHERE "login" = ? AND "acesso" = 'Y'`, [username]);
+        const allowed = perms.map(p => p.etiqueta);
+        res = res.filter(r => allowed.includes(r.tipoEtq));
+      }
       return res;
     } catch (ex) {
       throw new Error(

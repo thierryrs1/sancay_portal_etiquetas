@@ -13,7 +13,7 @@ sap.ui.define(
         }
         this.setModel(new JSONModel(), "Data");
         this.setModelProperty("Data", "CompanyName", sessionStorage.getItem("companyName"));
-        this.setModel(new JSONModel({ list: [ /*{ nome: "Coletor" },*/ { nome: "Portal"} ]}), "Sistemas");
+        this.setModel(new JSONModel({ list: [ { nome: "Portal"}, { nome: "Etiqueta"} ]}), "Sistemas");
         this.setModelProperty("Data", "Sistema", "Portal");
         this.carregaDados();
       },
@@ -42,8 +42,8 @@ sap.ui.define(
 
           const allCols = Object.keys(list[0]);
           const sistema = this.getModelProperty("Data", "Sistema");
-          const allowedCols = ["login", "Portal.Permissoes", "Portal.Configura_Impressao", "Portal.Etiqueta_Volume"];
-          const cols = allCols.filter((c) => allowedCols.includes(c));
+          
+          const cols = allCols.filter((c) => c === "login" || c.startsWith(`${sistema}.`));
 
           list.forEach((ln) => {
             allCols.forEach((c) => {
@@ -59,13 +59,10 @@ sap.ui.define(
 
           // insere colunas na tabela
           tblList.destroyColumns();
-          const rex = new RegExp(`^${sistema}\.`);
+          const rex = new RegExp(`^${sistema}\\.`);
           for (let i = 0; i < cols.length; i++) {
             const propName = cols[i];
-            let label = cols[i].replace(rex, "").replace("_", " ");
-            if (propName === "Portal.Etiqueta_Volume") label = "Impressão Etiqueta";
-            if (propName === "Portal.Permissoes") label = "Permissões";
-            if (propName === "Portal.Configura_Impressao") label = "Configura Impressão";
+            let label = propName.replace(rex, "").replace(/_/g, " ");
             
             let hAlign = "Center";
             

@@ -34,7 +34,7 @@ class EtiquetaController {
 
   async getTiposEtiquetaVolume(req, res) {
     try {
-      const result = await etiquetaService.getTiposEtiquetaVolume();
+      const result = await etiquetaService.getTiposEtiquetaVolume(req.userInfo.username);
       res.send(result);
     } catch (err) {
       sendError(res, err);
