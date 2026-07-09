@@ -55,6 +55,9 @@ sap.ui.define(
 
           this.getModel("Data").setSizeLimit(list.length);
 
+          // Ordena os usuários por ordem alfabética de login
+          list.sort((a, b) => a.login.localeCompare(b.login));
+
           this.setModelProperty("Data", "Items", list);
 
           // insere colunas na tabela
@@ -68,11 +71,9 @@ sap.ui.define(
             
             let template = {};
             if (propName == "login") {
-              template = new sap.m.ObjectStatus({
-                text: {
-                  path: `Data>${propName}`,
-                  textAlign: "Left",
-                },
+              template = new sap.m.Link({
+                text: `{Data>${propName}}`,
+                press: this.onToggleUserPermissions.bind(this)
               });
             } else {
               template = new sap.m.CheckBox({
@@ -104,6 +105,22 @@ sap.ui.define(
         } finally {
           sap.ui.core.BusyIndicator.hide();
         }
+      },
+      onToggleUserPermissions: function(oEvent) {
+        const oBindingContext = oEvent.getSource().getBindingContext("Data");
+        const path = oBindingContext.getPath();
+        const rowData = oBindingContext.getProperty();
+        
+        const sistema = this.getModelProperty("Data", "Sistema");
+        const keys = Object.keys(rowData).filter(k => k.startsWith(`${sistema}.`));
+        
+        // Se todos estiverem marcados, desmarca. Caso contrário, marca todos.
+        const allChecked = keys.every(k => rowData[k] === true);
+        const newValue = !allChecked;
+        
+        keys.forEach(k => {
+          this.getModel("Data").setProperty(`${path}/${k}`, newValue);
+        });
       },
 
       onSavePressed: async function() {
