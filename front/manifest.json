@@ -13,7 +13,6 @@
       "version": "1.40.12"
     }
   },
-
   "sap.ui": {
     "technology": "UI5",
     "icons": {
@@ -29,9 +28,11 @@
       "tablet": true,
       "phone": true
     },
-    "supportedThemes": ["sap_hcb", "sap_belize"]
+    "supportedThemes": [
+      "sap_hcb",
+      "sap_belize"
+    ]
   },
-
   "sap.ui5": {
     "rootView": {
       "viewName": "sps.wms.view.App",
@@ -49,9 +50,7 @@
       "compact": true,
       "cozy": true
     },
-    "models": {
-      
-    },
+    "models": {},
     "resources": {
       "css": [
         {
@@ -92,29 +91,9 @@
           "target": "etiquetavolume"
         },
         {
-          "pattern": "etiquetapalete",
-          "name": "etiquetapalete",
-          "target": "etiquetapalete"
-        },
-        {
-          "pattern": "etiquetaexpedicao",
-          "name": "etiquetaexpedicao",
-          "target": "etiquetaexpedicao"
-        },        
-        {
           "pattern": "permissoes",
           "name": "permissoes",
           "target": "permissoes"
-        },
-        {
-          "pattern": "usuariodeposito",
-          "name": "usuariodeposito",
-          "target": "usuariodeposito"
-        },
-        {
-          "pattern": "rotas",
-          "name": "rotas",
-          "target": "rotas"
         },
         {
           "pattern": "configuraimpressao",
@@ -125,21 +104,6 @@
           "pattern": "configsps",
           "name": "configsps",
           "target": "configsps"
-        },
-        {
-          "pattern": "configuracaowms",
-          "name": "configuracaowms",
-          "target": "configuracaowms"
-        },
-        {
-          "pattern": "solicitapicking",
-          "name": "solicitapicking",
-          "target": "solicitapicking"
-        },
-        {
-          "pattern": "cancelapicking",
-          "name": "cancelapicking",
-          "target": "cancelapicking"
         }
       ],
       "targets": {
@@ -162,29 +126,9 @@
           "viewName": "etiquetavolume",
           "viewLevel": 1
         },
-        "etiquetapalete": {
-          "viewId": "etiquetapalete",
-          "viewName": "etiquetapalete",
-          "viewLevel": 1
-        },
-        "etiquetaexpedicao": {
-          "viewId": "etiquetaexpedicao",
-          "viewName": "etiquetaexpedicao",
-          "viewLevel": 1
-        },        
         "permissoes": {
           "viewId": "permissoes",
           "viewName": "permissoes",
-          "viewLevel": 1
-        },
-        "usuariodeposito": {
-          "viewId": "usuariodeposito",
-          "viewName": "usuariodeposito",
-          "viewLevel": 1
-        },
-        "rotas": {
-          "viewId": "rotas",
-          "viewName": "rotas",
           "viewLevel": 1
         },
         "configuraimpressao": {
@@ -195,21 +139,6 @@
         "configsps": {
           "viewId": "configsps",
           "viewName": "configsps",
-          "viewLevel": 1
-        },
-        "configuracaowms": {
-          "viewId": "configuracaowms",
-          "viewName": "configuracaowms",
-          "viewLevel": 1
-        },
-        "solicitapicking": {
-          "viewId": "solicitapicking",
-          "viewName": "solicitapicking",
-          "viewLevel": 1
-        },
-        "cancelapicking": {
-          "viewId": "cancelapicking",
-          "viewName": "cancelapicking",
           "viewLevel": 1
         }
       }

@@ -20,33 +20,12 @@ sap.ui.define(
       onClickEtiquetaVolume: function() {
         this.navTo("etiquetavolume");
       },
-      onClickEtiquetaPalete: function() {
-        this.navTo("etiquetapalete");
-      },
-      onClickEtiquetaExpedicao: function() {
-        this.navTo("etiquetaexpedicao");
-      },
       onClickPermissoes: function() {
         this.navTo("permissoes");
       },
-      onClickUsuarioDeposito: function() {
-        this.navTo("usuariodeposito");
-      },
-      onClickRotas: function() {
-        this.navTo("rotas");
-      },
       onClickConfiguraImpressao: function() {
         this.navTo("configuraimpressao");
-      },
-      onClickConfiguracaoWms: function() {
-        this.navTo("configuracaowms");
-      }      ,
-      onClickSolicitaPicking: function() {
-        this.navTo("solicitapicking");
-      },
-      onClickCancelaPicking: function() {
-        this.navTo("cancelapicking");
       }
-      
+
     })
 );

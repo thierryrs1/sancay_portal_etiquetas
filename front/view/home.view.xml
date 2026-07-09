@@ -54,33 +54,7 @@
               <ImageContent src="sap-icon://role" />
             </TileContent>
           </GenericTile>
-          <!--<GenericTile
-              visible="{Data>/Configuracao_WMS}"
-              class="sapUiTinyMarginBegin sapUiTinyMarginTop tileLayout"
-              header="Configuração WMS"
-              press="onClickConfiguracaoWms">
-            <TileContent>
-              <ImageContent src="sap-icon://settings" />
-            </TileContent>
-          </GenericTile>
-          <GenericTile
-              visible="{Data>/Usuario_Deposito}"
-              class="sapUiTinyMarginBegin sapUiTinyMarginTop tileLayout"
-              header="Usuário x Depósito"
-              press="onClickUsuarioDeposito">
-            <TileContent>
-              <ImageContent src="sap-icon://account" />
-            </TileContent>
-          </GenericTile>
-          <GenericTile
-              visible="{Data>/Rotas}"
-              class="sapUiTinyMarginBegin sapUiTinyMarginTop tileLayout"
-              header="Rotas"
-              press="onClickRotas">
-            <TileContent>
-              <ImageContent src="sap-icon://journey-change" />
-            </TileContent>
-          </GenericTile>-->
+
           <GenericTile
               visible="{Data>/Configura_Impressao}"
               class="sapUiTinyMarginBegin sapUiTinyMarginTop tileLayout"
@@ -117,62 +91,10 @@
               <ImageContent src="sap-icon://print" />
             </TileContent>
           </GenericTile>
-          <!--<GenericTile
-              visible="{Data>/Etiqueta_Palete}"
-              class="sapUiTinyMarginBegin sapUiTinyMarginTop tileLayout"
-              header="Impressão Etiqueta Palete"
-              press="onClickEtiquetaPalete">
-            <TileContent>
-              <ImageContent src="sap-icon://print" />
-            </TileContent>
-          </GenericTile>
-          <GenericTile
-              visible="{Data>/Etiqueta_Expedicao}"
-              class="sapUiTinyMarginBegin sapUiTinyMarginTop tileLayout"
-              header="Impressão Etiqueta Expedição"
-              press="onClickEtiquetaExpedicao">
-            <TileContent>
-              <ImageContent src="sap-icon://print" />
-            </TileContent>
-          </GenericTile> -->
+
         </items>
       </FlexBox>
-      <!--<Title
-          text="Picking"
-          titleStyle="H3"
-          class="sapUiSmallMarginTop sapUiTinyMarginBegin"
-          visible="{Data>/Gerenciamento_Picking}" />
-      <FlexBox
-          alignItems="Center"
-          alignContent="Center"
-          direction="Row"
-          renderType="Bare"
-          wrap="Wrap"
-          width="100%"
-          displayInline="true"
-          fitContainer="true"
-          visible="{Data>/Gerenciamento_Picking}" >
-        <items>
-          <GenericTile
-              visible="{Data>/Gerenciamento_Picking}"
-              class="sapUiTinyMarginBegin sapUiTinyMarginTop tileLayout"
-              header="Solicita Picking"
-              press="onClickSolicitaPicking">
-            <TileContent>
-              <ImageContent src="sap-icon://add-activity" />
-            </TileContent>
-          </GenericTile>
-          <GenericTile
-              visible="{Data>/Gerenciamento_Picking}"
-              class="sapUiTinyMarginBegin sapUiTinyMarginTop tileLayout"
-              header="Cancela Picking"
-              press="onClickCancelaPicking">
-            <TileContent>
-              <ImageContent src="sap-icon://delete" />
-            </TileContent>
-          </GenericTile>
-        </items>
-      </FlexBox>-->
+
     </VBox>
   </Page>
 </mvc:View>
