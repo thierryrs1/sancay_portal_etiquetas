@@ -12,9 +12,7 @@ var svc = new Service({
   ]
 
 });
-//svc.logOnAs.domain = 'mydomain.local';
-//svc.logOnAs.account = 'username';
-//svc.logOnAs.password = 'password';
+
 
 svc.on('install', function () {
   svc.start();

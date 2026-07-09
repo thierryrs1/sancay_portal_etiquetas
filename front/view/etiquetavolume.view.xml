@@ -120,6 +120,16 @@
                             items="{Impressoras>/Items}">
               <core:Item key="{Impressoras>Impressora}" text="{Impressoras>Impressora}" />
             </Select>
+            <core:Title />
+            <Label text="Idioma"/>
+            <Select
+                            forceSelection="true"
+                            selectedKey="{Data>/Idioma}"
+                            maxWidth="30rem">
+              <core:Item key="PTB" text="Português Brasil" />
+              <core:Item key="EN" text="Inglês" />
+              <core:Item key="ES" text="Espanhol" />
+            </Select>
           </f:content>
         </f:SimpleForm>
       </t:extension>

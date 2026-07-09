@@ -12,7 +12,7 @@ sap.ui.define(
           this.navTo("home");
         }
         const todayStr = new Date(new Date().getTime() - new Date().getTimezoneOffset() * 60000).toISOString().split('T')[0];
-        this.setModel(new JSONModel({ DataIni: "1900-01-01", DataFin: todayStr }), "Data");
+        this.setModel(new JSONModel({ DataIni: "1900-01-01", DataFin: todayStr, Idioma: "PTB" }), "Data");
         this.setModel(new JSONModel(), "TiposEtiqueta");
         this.setModel(new JSONModel(), "Estufas");
         this.setModel(new JSONModel(), "OrdensProducao");
@@ -293,7 +293,15 @@ sap.ui.define(
           const item = model.getProperty(path);
           if (i==0)
             numVol = item.VOL;
-          confVolumesLineKey.push(item.confVolumesLineKey);
+          
+          let key = item.confVolumesLineKey;
+          if (data.Idioma) {
+            key += `@${data.Idioma}@`;
+          } else {
+            key += `@PTB@`;
+          }
+          confVolumesLineKey.push(key);
+          
           if (tipo.length === 0) { tipo.push(item.tipoEtq) };
         }
         try {
@@ -334,7 +342,15 @@ sap.ui.define(
           const item = model.getProperty(path);
           if (i==0)
             numVol = item.VOL;
-          confVolumesLineKey.push(item.confVolumesLineKey);
+
+          let key = item.confVolumesLineKey;
+          if (data.Idioma) {
+            key += `@${data.Idioma}@`;
+          } else {
+            key += `@PTB@`;
+          }
+          confVolumesLineKey.push(key);
+
           if (tipo.length === 0) { tipo.push(item.tipoEtq) };
         }
         try {
