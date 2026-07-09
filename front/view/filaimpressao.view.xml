@@ -9,7 +9,7 @@
       id="pageView"
       busyIndicatorDelay="0"
       showHeader="true"
-      title="Fila de Impressão"
+      title="Status das Impressoras"
       showFooter="false"
       showNavButton="true"
       enableScrolling="false"

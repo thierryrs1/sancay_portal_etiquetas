@@ -68,7 +68,7 @@
           <GenericTile
               visible="{Data>/Fila_Impressao}"
               class="sapUiTinyMarginBegin sapUiTinyMarginTop tileLayout"
-              header="Fila de Impressões"
+              header="Status Impressoras"
               press="onClickFilaImpressao">
             <TileContent>
               <ImageContent src="sap-icon://print" />
