@@ -31,6 +31,7 @@ routes.get('/etiqueta/getEstufas', etiquetaController.getEstufas);
 routes.get('/etiqueta/getOrdensProducao', etiquetaController.getOrdensProducao);
 routes.post('/etiqueta/getListaImpressoesVolume', etiquetaController.getListaImpressoesVolume);
 routes.post('/etiqueta/getImpressorasVolume', etiquetaController.getImpressorasVolume);
+routes.post('/etiqueta/getLogImpressao', etiquetaController.getLogImpressao);
 
 routes.post("/etiqueta/imprimeEtq", printController.imprimeEtq);
 routes.post("/etiqueta/imprimeVolumes", printController.imprimeVolumes);

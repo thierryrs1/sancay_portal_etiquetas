@@ -5,15 +5,45 @@ const { ServiceLayer, DirectDb } = require("sps-sap-interface");
 const iconv = require('iconv-lite');
 const printer = require('@thiagoelg/node-printer');
 const axios = require ('axios');
-
+const path = require('path');
 class PrintService {
 
-  async imprimeVolumes(impressora, tipo, confVolumesLineKeys, visualizar, numVolume) {
+  async imprimeVolumes(impressora, tipo, confVolumesLineKeys, visualizar, numVolume, username, jsonDataList) {
     logDebug(`start imprimeVolumes impressora=${impressora}, volumeIds=${confVolumesLineKeys}`);
     if ((confVolumesLineKeys === '' && tipo !== 'SALDO' ) || impressora === '') {
       return;
     }
     let pdf = await this.imprimeEtq(impressora, tipo, [ confVolumesLineKeys ], visualizar, numVolume);
+    
+    // Gravar Log apenas para impressões reais
+    if (!visualizar) {
+      try {
+         const chavesStr = String(confVolumesLineKeys);
+         const chavesArray = chavesStr.includes(',') ? chavesStr.split(',') : [chavesStr];
+         const jsonArray = jsonDataList || [];
+         const numVolumeEscaped = String(numVolume || '').replace(/'/g, "''");
+         const usernameEscaped = String(username || '').replace(/'/g, "''");
+         const impressoraEscaped = String(impressora).replace(/'/g, "''");
+         const tipoEscaped = String(tipo).replace(/'/g, "''");
+         
+         const d = new Date();
+         const pad = (n) => (n < 10 ? '0'+n : n);
+         const exactTime = `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+         
+         for (let i = 0; i < chavesArray.length; i++) {
+            const ch = chavesArray[i].trim().replace(/'/g, "''");
+            const jsonStr = (jsonArray[i] ? JSON.stringify(jsonArray[i]) : '').replace(/'/g, "''");
+            
+            if (ch !== '') {
+               const query = `INSERT INTO "SPS_LOG_IMPRESSAO" ("DataHora", "Login", "TipoEtiqueta", "Impressora", "Chaves", "JSON_Data") VALUES (TO_TIMESTAMP('${exactTime}', 'YYYY-MM-DD HH24:MI:SS'), '${usernameEscaped}', '${tipoEscaped}', '${impressoraEscaped}', '${ch}', '${jsonStr}')`;
+               await DirectDb.executeQuery(query);
+            }
+         }
+      } catch(logErr) {
+         logError(`Erro gravando log de impressão: ` + logErr.message);
+      }
+    }
+
     logDebug("end imprimeVolumes");
     return pdf;
   }
@@ -84,8 +114,8 @@ class PrintService {
     let template = pathPrn;
     let templateKit = pathPrnKit;
     let dadosEtq;
+    let newProcedure = '';
     try {
-      let newProcedure = '';
       if (numVol != '' && numVol != undefined){
         newProcedure = procedure+'_VOL';
         parms.push(numVol);
@@ -144,6 +174,27 @@ class PrintService {
 
   async visualizarEtiqueta(prn) {
     try {
+      // ---- Limpeza de PDFs antigos (mais de 5 minutos) ----
+      try {
+        const dir = process.env.CAMINHO_PDF;
+        if (fs.existsSync(dir)) {
+          const files = fs.readdirSync(dir);
+          const now = Date.now();
+          files.forEach(file => {
+            if (file.endsWith('.pdf')) {
+              const filePath = path.join(dir, file);
+              const stats = fs.statSync(filePath);
+              const ageInMs = now - stats.mtimeMs;
+              if (ageInMs > 5 * 60 * 1000) { // 5 minutos
+                fs.unlinkSync(filePath);
+              }
+            }
+          });
+        }
+      } catch (cleanupErr) {
+        logError(`Erro na limpeza de PDFs: ${cleanupErr.message}`);
+      }
+      // -----------------------------------------------------
 
       let width = prn.match(/(\^PW)\d+/)[0].replace('^PW','');
       let height = prn.match(/(\^LL)\d+/)[0].replace('^LL','');

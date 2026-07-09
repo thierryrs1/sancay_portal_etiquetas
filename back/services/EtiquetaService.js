@@ -77,6 +77,17 @@ class EtiquetaService {
     }
   }
 
+  async getLogImpressao(dataIni, dataFin, login) {
+    try {
+      const res = await DirectDb.executeProcedure("SP_SPS_PORTAL_LOG_IMPRESSAO", [dataIni, dataFin, login || '']);
+      return res;
+    } catch (ex) {
+      throw new Error(
+        `Erro obtendo log de impressões: ` + errors.getError(ex)
+      );
+    }
+  }
+
 }
 
 module.exports = new EtiquetaService();

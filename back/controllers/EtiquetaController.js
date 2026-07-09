@@ -60,7 +60,15 @@ class EtiquetaController {
     }
   }
 
-
+  async getLogImpressao(req, res) {
+    try {
+      const { dataIni, dataFin, login } = req.body;
+      const result = await etiquetaService.getLogImpressao(dataIni, dataFin, login);
+      res.send(result);
+    } catch (err) {
+      sendError(res, err);
+    }
+  }
 
 }
 

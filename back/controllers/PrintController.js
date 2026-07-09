@@ -15,9 +15,9 @@ class PrintController {
 
   async imprimeVolumes(req, res) {
     try {
-      const { impressora, tipo ,confVolumesLineKeys, visualizar, numVolume } = req.body;
-      let pdf = await printService.imprimeVolumes( impressora, tipo,confVolumesLineKeys, visualizar, numVolume );
-      res.send(pdf);
+      const { impressora, tipo, confVolumesLineKeys, visualizar, numVolume, jsonDataList } = req.body;
+      const response = await printService.imprimeVolumes(impressora, tipo, confVolumesLineKeys, visualizar, numVolume, req.userInfo.username, jsonDataList);
+      res.send(response);
     } catch (err) {
       sendError(res, err);
     }

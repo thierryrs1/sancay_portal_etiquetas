@@ -1,0 +1,119 @@
+<mvc:View
+    xmlns:mvc="sap.ui.core.mvc"
+    controllerName="sps.wms.controller.logimpressao"
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core"
+    xmlns:data="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1"
+    xmlns:layout="sap.ui.layout"
+    xmlns:f="sap.ui.layout.form"
+    xmlns:t="sap.ui.table">
+  <Page
+      id="pageView"
+      busyIndicatorDelay="0"
+      showHeader="true"
+      title="Auditoria de Impressões : {Data>/CompanyName}"
+      showFooter="false"
+      showNavButton="true"
+      navButtonPress="onBack">
+    <headerContent>
+      <Toolbar class="sapMTBHeader-CTX">
+        <Button
+            text="Sair"
+            type="Up"
+            icon="sap-icon://log"
+            iconFirst="true"
+            width="auto"
+            enabled="true"
+            visible="true"
+            press="onLogout" />
+      </Toolbar>
+    </headerContent>
+    <t:Table
+        id="tblList"
+        rows="{Data>/Items}"
+        selectionMode="None"
+        selectionBehavior="RowSelector"
+        alternateRowColors="true"
+        enableColumnReordering="true"
+        visibleRowCountMode="Auto"
+        enableCellFilter="true"
+        width="100%"
+        rowHeight="40">
+      <t:extension>
+        <f:SimpleForm
+            editable="true"
+            layout="ResponsiveGridLayout"
+            labelSpanL="4"
+            labelSpanM="4"
+            adjustLabelSpan="false"
+            emptySpanL="0"
+            emptySpanM="0"
+            columnsL="3"
+            columnsM="3"
+            singleContainerFullSize="false">
+          <f:content>
+            <core:Title text="Filtros" />
+            <Label text="Data Início" />
+            <DatePicker 
+                value="{Data>/DataIni}" 
+                valueFormat="yyyy-MM-dd"/>
+            <Label text="Data Fim" />
+            <DatePicker 
+                value="{Data>/DataFin}" 
+                valueFormat="yyyy-MM-dd"/>
+            <Label text="Login (Opcional)" />
+            <Input 
+                value="{Data>/Login}" />
+            <Button
+                text="Pesquisar"
+                press="onSearchPressed"
+                type="Emphasized"
+                icon="sap-icon://search" />
+          </f:content>
+        </f:SimpleForm>
+      </t:extension>
+      <t:columns>
+        <t:Column width="11rem" sortProperty="DataHoraFormatada" filterProperty="DataHoraFormatada">
+          <Label text="Data / Hora" />
+          <t:template>
+            <Text text="{Data>DataHoraFormatada}" />
+          </t:template>
+        </t:Column>
+        <t:Column width="8rem" sortProperty="Login" filterProperty="Login">
+          <Label text="Usuário" />
+          <t:template>
+            <Text text="{Data>Login}" />
+          </t:template>
+        </t:Column>
+        <t:Column width="10rem" sortProperty="TipoEtiqueta" filterProperty="TipoEtiqueta">
+          <Label text="Tipo de Etq" />
+          <t:template>
+            <Text text="{Data>TipoEtiqueta}" />
+          </t:template>
+        </t:Column>
+        <t:Column width="15rem" sortProperty="Chaves" filterProperty="Chaves">
+          <Label text="Parâmetros (Lote/OP/ID)" />
+          <t:template>
+            <Text text="{Data>Chaves}" />
+          </t:template>
+        </t:Column>
+        <t:Column width="12rem" sortProperty="Impressora" filterProperty="Impressora">
+          <Label text="Impressora" />
+          <t:template>
+            <Text text="{Data>Impressora}" />
+          </t:template>
+        </t:Column>
+        <t:Column width="11rem" hAlign="Center">
+          <Label text="Ações" />
+          <t:template>
+            <HBox alignItems="Center" justifyContent="Center">
+              <Button icon="sap-icon://syntax" type="Transparent" press="onViewJSON" tooltip="Ver JSON" class="sapUiTinyMarginEnd" visible="{= !!${Data>JSON_Data}}"/>
+              <Button icon="sap-icon://sys-monitor" type="Transparent" press="onPreview" tooltip="Visualizar Etiqueta" class="sapUiTinyMarginEnd" />
+              <Button icon="sap-icon://print" type="Transparent" press="onReprint" tooltip="Reimprimir Etiqueta" />
+            </HBox>
+          </t:template>
+        </t:Column>
+      </t:columns>
+    </t:Table>
+  </Page>
+</mvc:View>

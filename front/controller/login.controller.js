@@ -40,6 +40,18 @@ sap.ui.define(
             oUserInput.focus();
           }
         });
+        
+        // Busca o nome do banco
+        this.fetchDbName();
+      },
+
+      async fetchDbName() {
+        try {
+          const dbName = await this.serverService.get("/configSps/getConf/DB_NAME");
+          this.getModel("login").setProperty("/DbName", dbName);
+        } catch (ex) {
+          // ignora se falhar
+        }
       },
       /**
        * Confirmação do login

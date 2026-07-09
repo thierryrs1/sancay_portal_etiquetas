@@ -25,6 +25,9 @@ sap.ui.define(
       },
       onClickConfiguraImpressao: function() {
         this.navTo("configuraimpressao");
+      },
+      onClickLogImpressao: function() {
+        this.navTo("logimpressao");
       }
 
     })

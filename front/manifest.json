@@ -96,6 +96,11 @@
           "target": "permissoes"
         },
         {
+          "pattern": "logimpressao",
+          "name": "logimpressao",
+          "target": "logimpressao"
+        },
+        {
           "pattern": "configuraimpressao",
           "name": "configuraimpressao",
           "target": "configuraimpressao"
@@ -129,6 +134,11 @@
         "permissoes": {
           "viewId": "permissoes",
           "viewName": "permissoes",
+          "viewLevel": 1
+        },
+        "logimpressao": {
+          "viewId": "logimpressao",
+          "viewName": "logimpressao",
           "viewLevel": 1
         },
         "configuraimpressao": {

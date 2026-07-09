@@ -285,6 +285,7 @@ sap.ui.define(
         }
 
         const confVolumesLineKey = [];
+        const jsonDataList = [];
         const tipo = [];
         let numVol = '';
         const model = this.getModel("Data");
@@ -301,15 +302,16 @@ sap.ui.define(
             key += `@PTB@`;
           }
           confVolumesLineKey.push(key);
+          jsonDataList.push(item);
           
           if (tipo.length === 0) { tipo.push(item.tipoEtq) };
         }
         try {
           const tipoFinal = tipo[0] || data.tipoEtq;
           if ( data.VisualizaVol == true) {
-            await this.serverService.post("/etiqueta/imprimeVolumes", { impressora: data.Impressora, tipo: tipoFinal, confVolumesLineKeys: confVolumesLineKey.join(","), visualizar:false, numVolume: numVol});
+            await this.serverService.post("/etiqueta/imprimeVolumes", { impressora: data.Impressora, tipo: tipoFinal, confVolumesLineKeys: confVolumesLineKey.join(","), visualizar:false, numVolume: numVol, jsonDataList});
           } else {
-            await this.serverService.post("/etiqueta/imprimeVolumes", { impressora: data.Impressora, tipo: tipoFinal, confVolumesLineKeys: confVolumesLineKey.join(","), visualizar: false});
+            await this.serverService.post("/etiqueta/imprimeVolumes", { impressora: data.Impressora, tipo: tipoFinal, confVolumesLineKeys: confVolumesLineKey.join(","), visualizar: false, jsonDataList});
           }
           this.showSuccessMessageBox("Enviado", "Enviado para impressão");
           this.carregaDados();

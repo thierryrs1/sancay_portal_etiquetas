@@ -47,10 +47,15 @@
                                             </layoutData>
                                         </Image>
 
-                                        <Label
-                                            text="Portal Etiqueta"
-                                            design="Bold" 
-                                            class="morepadding"/>
+                                        <VBox alignItems="Center" justifyContent="Center" class="morepadding">
+                                            <Label
+                                                text="Portal Etiqueta"
+                                                design="Bold" />
+                                            <Label
+                                                text="{login>/DbName}"
+                                                visible="{= ${login>/DbName} ? true : false}"
+                                                class="sapUiSmallMarginBottom" />
+                                        </VBox>
                                         
                                         <Input
                                             placeholder="Usuário"
