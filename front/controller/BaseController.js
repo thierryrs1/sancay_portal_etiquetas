@@ -184,7 +184,7 @@ sap.ui.define(
           const data = sessionStorage.getItem(`params_${this.route}`);
           // eslint-disable-next-line no-sequences
           this.initialize(data ? JSON.parse(data) : null), oEvent;
-          document.title = "Portal WMS";
+          document.title = "Portal de Etiquetas";
         }
       },
       initialize() {},

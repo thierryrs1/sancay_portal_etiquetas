@@ -12,6 +12,7 @@
     "jsonwebtoken": "^8.5.1",
     "moment-timezone": "^0.5.40",
     "node-windows": "^1.0.0-beta.8",
+    "pdf-lib": "^1.17.1",
     "regenerator-runtime": "^0.13.9",
     "sps-sap-interface": "^2.1.8"
   },
@@ -23,9 +24,5 @@
     "type": "git",
     "url": "https://srvgit.gruposps.com.br:8247/kovalent/portal.etiqueta.git"
   },
-  "author": "",
-  "engines": {
-    "node": "16.18.1",
-    "npm": "8.19.2"
-  }
+  "author": ""
 }

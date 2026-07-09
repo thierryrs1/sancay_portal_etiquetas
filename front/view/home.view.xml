@@ -11,7 +11,7 @@
       id="pageView"
       busyIndicatorDelay="0"
       showHeader="true"
-      title="Portal WMS : {Data>/CompanyName}"
+      title="Portal de Etiquetas : {Data>/CompanyName}"
       showFooter="true"
       showNavButton="false"
       navButtonPress="onBack">

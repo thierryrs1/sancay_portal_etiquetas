@@ -12,7 +12,12 @@ sap.ui.define(
         await this.setPerms();
       },
       setPerms: async function() {
-        const perms = JSON.parse(sessionStorage.getItem("perms"));
+        let perms = JSON.parse(sessionStorage.getItem("perms") || "{}");
+        try {
+          perms = await this.serverService.get("/getPerms");
+          sessionStorage.setItem("perms", JSON.stringify(perms));
+        } catch(e) {}
+
         Object.keys(perms).forEach((k) => {
           this.setModelProperty("Data", k, perms[k]);
         });

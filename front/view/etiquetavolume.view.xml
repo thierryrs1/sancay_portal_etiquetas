@@ -148,7 +148,7 @@
         <content>
           <ToolbarSpacer />
           <Button text="Imprimir" press="onPrintPressed" type="Accept" icon="sap-icon://print"/>
-          <Button text="Visualizar" press="onVisualizarPressed" type="Accept" icon="sap-icon://print"/>
+          <Button text="Visualizar" press="onVisualizarPressed" type="Accept" icon="sap-icon://print" visible="{Data>/PodeVisualizar}"/>
         </content>
       </OverflowToolbar>
     </footer>

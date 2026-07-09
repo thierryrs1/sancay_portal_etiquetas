@@ -7,14 +7,20 @@ sap.ui.define(
     BaseController.extend("sps.wms.controller.etiquetavolume", {
       route: "etiquetavolume",
       async initialize() {
-        const perms = JSON.parse(sessionStorage.getItem("perms"));
+        let perms = JSON.parse(sessionStorage.getItem("perms") || "{}");
+        try {
+          perms = await this.serverService.get("/getPerms");
+          sessionStorage.setItem("perms", JSON.stringify(perms));
+        } catch(e) {}
+
         if (!perms.Etiqueta_Volume) {
           this.navTo("home");
+          return;
         }
         const todayStr = new Date(new Date().getTime() - new Date().getTimezoneOffset() * 60000).toISOString().split('T')[0];
         let favLang = localStorage.getItem('fav_lang');
         if (!favLang) favLang = "PTB";
-        this.setModel(new JSONModel({ DataIni: "1900-01-01", DataFin: todayStr, Idioma: favLang }), "Data");
+        this.setModel(new JSONModel({ DataIni: "1900-01-01", DataFin: todayStr, Idioma: favLang, PodeVisualizar: perms.Visualizar_Etiqueta }), "Data");
         this.setModel(new JSONModel(), "TiposEtiqueta");
         this.setModel(new JSONModel(), "Estufas");
         this.setModel(new JSONModel(), "OrdensProducao");
