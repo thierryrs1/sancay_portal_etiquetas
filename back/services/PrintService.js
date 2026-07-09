@@ -162,7 +162,8 @@ class PrintService {
       }
 
       const url = `http://api.labelary.com/v1/printers/24dpmm/labels/${width > 15 ? 15 : width}x${height > 15 ? 15 : height}/0/`;
-      const filename = process.env.CAMINHO_PDF + process.env.NOME_PDF;
+      const uniqueId = Date.now() + "_" + Math.random().toString(36).substring(7);
+      const filename = process.env.CAMINHO_PDF + uniqueId + "_" + process.env.NOME_PDF;
       let res = await axios.post(
         url,
         prn,

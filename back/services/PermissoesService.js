@@ -51,19 +51,20 @@ class PermissoesService {
         for (let j = 0; j < portalKeys.length; j++) {
           fields.push(`"${portalKeys[j]}"`);
           if (portalKeys[j] != "login") {
-            values.push(`'${list[i][portalKeys[j]] ? "Y" : "N"}'`);
+            values.push(`'${(list[i][portalKeys[j]] ? "Y" : "N").replace(/'/g, "''")}'`);
           } else {
-            values.push(`'${list[i][portalKeys[j]]}'`);
+            const loginEscaped = String(list[i][portalKeys[j]]).replace(/'/g, "''");
+            values.push(`'${loginEscaped}'`);
           }
         }
         query += `
         UPSERT SPS_PERMISSOES (${fields.join(',')}) VALUES (${values.join(',')}) WITH PRIMARY KEY;`;
         
         // 2. Salva permissões de Etiqueta (SPS_PERMISSOES_ETQ)
-        const login = list[i].login;
+        const login = String(list[i].login).replace(/'/g, "''");
         for (let j = 0; j < etqKeys.length; j++) {
           const key = etqKeys[j];
-          const etiqueta = key.replace('Etiqueta.', '');
+          const etiqueta = String(key.replace('Etiqueta.', '')).replace(/'/g, "''");
           const acesso = list[i][key] ? "Y" : "N";
           query += `
           UPSERT SPS_PERMISSOES_ETQ ("login", "etiqueta", "acesso") VALUES ('${login}', '${etiqueta}', '${acesso}') WITH PRIMARY KEY;`;
