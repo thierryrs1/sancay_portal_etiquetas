@@ -33,7 +33,7 @@
           text="Configurações Sistema"
           titleStyle="H3"
           class="sapUiSmallMarginTop sapUiTinyMarginBegin"
-          visible="{= ${Data>/Configura_Impressao} || ${Data>/Permissoes} || ${Data>/Log_Impressao}}" />
+          visible="{= ${Data>/Configura_Impressao} || ${Data>/Permissoes}}" />
       <FlexBox
           alignItems="Center"
           alignContent="Center"
@@ -43,7 +43,7 @@
           width="100%"
           displayInline="true"
           fitContainer="true"
-          visible="{= ${Data>/Configura_Impressao} || ${Data>/Permissoes} || ${Data>/Log_Impressao}}">
+          visible="{= ${Data>/Configura_Impressao} || ${Data>/Permissoes}}">
         <items>
           <GenericTile
               visible="{Data>/Permissoes}"
@@ -56,22 +56,40 @@
           </GenericTile>
 
           <GenericTile
-              visible="{Data>/Log_Impressao}"
-              class="sapUiTinyMarginBegin sapUiTinyMarginTop tileLayout"
-              header="Auditoria de Impressões"
-              press="onClickLogImpressao">
-            <TileContent>
-              <ImageContent src="sap-icon://history" />
-            </TileContent>
-          </GenericTile>
-
-          <GenericTile
               visible="{Data>/Configura_Impressao}"
               class="sapUiTinyMarginBegin sapUiTinyMarginTop tileLayout"
               header="Configura Impressão"
               press="onClickConfiguraImpressao">
             <TileContent>
               <ImageContent src="sap-icon://developer-settings" />
+            </TileContent>
+          </GenericTile>
+        </items>
+      </FlexBox>
+
+      <Title
+          text="Gestão"
+          titleStyle="H3"
+          class="sapUiSmallMarginTop sapUiTinyMarginBegin"
+          visible="{Data>/Log_Impressao}" />
+      <FlexBox
+          alignItems="Center"
+          alignContent="Center"
+          direction="Row"
+          renderType="Bare"
+          wrap="Wrap"
+          width="100%"
+          displayInline="true"
+          fitContainer="true"
+          visible="{Data>/Log_Impressao}">
+        <items>
+          <GenericTile
+              visible="{Data>/Log_Impressao}"
+              class="sapUiTinyMarginBegin sapUiTinyMarginTop tileLayout"
+              header="Auditoria de Impressões"
+              press="onClickLogImpressao">
+            <TileContent>
+              <ImageContent src="sap-icon://history" />
             </TileContent>
           </GenericTile>
         </items>
