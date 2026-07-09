@@ -31,27 +31,6 @@ class EtiquetaController {
     }
   }
 
-  async getListaPaletes(req, res) {
-    try {
-      const { filter } = req.body;
-      filter.push(req.userInfo.username);
-      const result = await etiquetaService.getListaPaletes(filter);
-      res.send(result);
-    } catch (err) {
-      sendError(res, err);
-    }
-  }
-  
-  async getListaEtiquetasExpedicao(req, res) {
-    try {
-      const { filter } = req.body;
-      filter.push(req.userInfo.username);
-      const result = await etiquetaService.getListaEtiquetasExpedicao(filter);
-      res.send(result);
-    } catch (err) {
-      sendError(res, err);
-    }
-  }
 
   async getTiposEtiquetaVolume(req, res) {
     try {
@@ -81,23 +60,7 @@ class EtiquetaController {
     }
   }
 
-  async getImpressorasPalete(req, res) {
-    try {
-      const result = await etiquetaService.getImpressorasPalete(req.userInfo.usercode);
-      res.send(result);
-    } catch (err) {
-      sendError(res, err);
-    }
-  }
 
-  async getImpressorasExpedicao(req, res) {
-    try {
-      const result = await etiquetaService.getImpressorasExpedicao(req.userInfo.usercode);
-      res.send(result);
-    } catch (err) {
-      sendError(res, err);
-    }
-  }
 
 }
 

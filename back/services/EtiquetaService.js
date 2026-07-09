@@ -57,60 +57,11 @@ class EtiquetaService {
     }
   }
 
-  async getImpressorasPalete(userCode) {
-    try {
-      const res = await DirectDb.executeProcedure("SP_SPS_PORTAL_IMPRESSORAS", ["PALETE", userCode]);
-      return res;
-    } catch (ex) {
-      throw new Error(
-        `Erro obtendo impressoras etiqueta palete: ` + errors.getError(ex)
-      );
-    }
-  }
-
-  async getImpressorasExpedicao(userCode) {
-    try {
-      const res = await DirectDb.executeProcedure("SP_SPS_PORTAL_IMPRESSORAS", ["EXPEDICAO", userCode]);
-      return res;
-    } catch (ex) {
-      throw new Error(
-        `Erro obtendo impressoras etiqueta EXPEDICAO: ` + errors.getError(ex)
-      );
-    }
-  }
 
   async getListaImpressoesVolume(filter) {
     try {
       const lista = await DirectDb.executeProcedure(
         "SP_SPS_PORTAL_IMP_VOL_LISTA",
-        filter
-      );
-      return lista;
-    } catch (ex) {
-      throw new Error(
-        `Erro obtendo lista de impressões: ` + errors.getError(ex)
-      );
-    }
-  }
-
-  async getListaPaletes(filter) {
-    try {
-      const lista = await DirectDb.executeProcedure(
-        "SP_SPS_WMS_PORTAL_IMP_PALETES_LISTA",
-        filter
-      );
-      return lista;
-    } catch (ex) {
-      throw new Error(
-        `Erro obtendo lista de impressões: ` + errors.getError(ex)
-      );
-    }
-  }
-
-  async getListaEtiquetasExpedicao(filter) {
-    try {
-      const lista = await DirectDb.executeProcedure(
-        "SP_SPS_WMS_PORTAL_IMP_EXPEDICAO_LISTA",
         filter
       );
       return lista;

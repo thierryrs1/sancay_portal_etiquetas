@@ -18,28 +18,6 @@ class PrintService {
     return pdf;
   }
 
-  async imprimePaletes(printJob) {
-    const { paletes, impressoraPalete } = printJob;
-
-    if (!paletes || paletes.length == 0) {
-      return;
-    }
-
-    for (let i = 0; i < paletes.length; i++) {
-      const palete = paletes[i];
-      await this.imprimeEtq(impressoraPalete, "PALETE", [ palete ]);
-    }
-  }
-
-  async imprimeEtiquetasExpedicao(printJob) {
-    const { impressora, docs, visualizar } = printJob;
-    for (let i = 0; i < docs.length; i++) {
-      const { docType, docEntry } = docs[i];
-      const query = `SELECT FN_SPS_WMS_ETIQ_REGRA('EXPEDICAO', null, null, null, null, null, ?, ?, null) "tipoEtq" FROM DUMMY;`;
-      const tipoEtqRes = await DirectDb.executeQuery(query, [ docType, docEntry ]);
-      await this.imprimeEtq(impressora, tipoEtqRes[0].tipoEtq, [ docType, docEntry ], visualizar);
-    }
-  }
 
   async imprimeEtq(impressora, tipo, parms, visualizar, numVol) {
     if (!tipo || tipo == "") {

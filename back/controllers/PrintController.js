@@ -23,25 +23,6 @@ class PrintController {
     }
   }
 
-  async imprimeEtiquetasExpedicao(req, res) {
-    try {
-      const { printJob } = req.body;
-      await printService.imprimeEtiquetasExpedicao( printJob );
-      res.send("");
-    } catch (err) {
-      sendError(res, err);
-    }
-  }
-
-  async imprimePaletes(req, res) {
-    try {
-      const { printJob } = req.body;
-      await printService.imprimePaletes( printJob );
-      res.send("");
-    } catch (err) {
-      sendError(res, err);
-    }
-  }
 
 }
 
