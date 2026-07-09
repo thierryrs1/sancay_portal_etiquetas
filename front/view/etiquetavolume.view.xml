@@ -121,15 +121,23 @@
               <core:Item key="{Impressoras>Impressora}" text="{Impressoras>Impressora}" />
             </Select>
             <core:Title />
-            <Label text="Idioma"/>
-            <Select
-                            forceSelection="true"
-                            selectedKey="{Data>/Idioma}"
-                            maxWidth="30rem">
-              <core:Item key="PTB" text="Português Brasil" />
-              <core:Item key="EN" text="Inglês" />
-              <core:Item key="ES" text="Espanhol" />
-            </Select>
+            <Label text="Idioma Padrão"/>
+            <HBox alignItems="Center">
+              <Select
+                              forceSelection="true"
+                              selectedKey="{Data>/Idioma}"
+                              maxWidth="26rem"
+                              class="sapUiTinyMarginEnd">
+                <core:Item key="PTB" text="Português Brasil" />
+                <core:Item key="EN" text="Inglês" />
+                <core:Item key="ES" text="Espanhol" />
+              </Select>
+              <Button 
+                              icon="sap-icon://favorite" 
+                              type="Transparent" 
+                              tooltip="Salvar Idioma Padrão" 
+                              press="onSaveFavoriteLang" />
+            </HBox>
           </f:content>
         </f:SimpleForm>
       </t:extension>

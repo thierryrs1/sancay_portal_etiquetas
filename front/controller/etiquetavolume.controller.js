@@ -12,7 +12,9 @@ sap.ui.define(
           this.navTo("home");
         }
         const todayStr = new Date(new Date().getTime() - new Date().getTimezoneOffset() * 60000).toISOString().split('T')[0];
-        this.setModel(new JSONModel({ DataIni: "1900-01-01", DataFin: todayStr, Idioma: "PTB" }), "Data");
+        let favLang = localStorage.getItem('fav_lang');
+        if (!favLang) favLang = "PTB";
+        this.setModel(new JSONModel({ DataIni: "1900-01-01", DataFin: todayStr, Idioma: favLang }), "Data");
         this.setModel(new JSONModel(), "TiposEtiqueta");
         this.setModel(new JSONModel(), "Estufas");
         this.setModel(new JSONModel(), "OrdensProducao");
@@ -88,6 +90,7 @@ sap.ui.define(
           const impressoras = await this.serverService.post(`/etiqueta/getImpressorasVolume`, { tipoEtq });
           impressoras.splice(0, 0, { Impressora: "" });
           this.setModelProperty("Impressoras", "Items", impressoras);
+          
           if (impressoras.length == 2) {
             this.setModelProperty("Data", "Impressora", impressoras[1].Impressora);
           } else if (impressoras.length > 2) {
@@ -101,7 +104,21 @@ sap.ui.define(
         }
       },
 
+      onSaveFavoriteLang: function() {
+        const selected = this.getModel("Data").getProperty("/Idioma");
+        if (selected) {
+          localStorage.setItem('fav_lang', selected);
+          sap.m.MessageToast.show("Idioma " + selected + " salvo como padrão!");
+        }
+      },
+
       carregaDados: async function () {
+        const data = this.getModel("Data").getData();
+        if (!data.tipoEtq || data.tipoEtq === "") {
+          this.showErrorMessageBox("Erro", "Por favor, selecione o Tipo de Etiqueta antes de consultar.");
+          return;
+        }
+        
         sap.ui.core.BusyIndicator.show();
         this.getView().byId("tblList").clearSelection();
         const tblList = this.getView().byId("tblList");

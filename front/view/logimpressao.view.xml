@@ -92,7 +92,7 @@
           </t:template>
         </t:Column>
         <t:Column width="15rem" sortProperty="Chaves" filterProperty="Chaves">
-          <Label text="Parâmetros (Lote/OP/ID)" />
+          <Label text="Parâmetros" />
           <t:template>
             <Text text="{Data>Chaves}" />
           </t:template>
