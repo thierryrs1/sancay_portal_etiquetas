@@ -66,10 +66,18 @@
                 textAlign="Left"
                 width="100%" />
             <t:template>
-              <Input
-                  width="100%"
-                  visible="{= ${TipoEtq>tipoEtq}!==null}"
-                  value="{TipoEtq>pathPrn}" />
+              <HBox alignContent="Center" alignItems="Center">
+                <Button
+                    icon="sap-icon://edit"
+                    type="Transparent"
+                    visible="{= ${TipoEtq>tipoEtq}!==null}"
+                    press="onOpenPrnModal"
+                    class="sapUiTinyMarginEnd" />
+                <Text
+                    visible="{= ${TipoEtq>tipoEtq}!==null}"
+                    text="{TipoEtq>pathPrn}" 
+                    maxLines="1" />
+              </HBox>
             </t:template>
           </t:Column>
           <t:Column width="35%">
@@ -194,5 +202,20 @@
         </content>
       </OverflowToolbar>
     </footer>
+    <dependents>
+      <Dialog id="prnDialog" title="Código PRN" stretch="true" contentWidth="800px" contentHeight="600px" verticalScrolling="true" resizable="true" draggable="true">
+        <content>
+          <TextArea 
+              value="{TipoEtq>pathPrn}" 
+              width="100%" 
+              height="100%" 
+              rows="30"
+              placeholder="Cole o código PRN (ZPL) aqui..." />
+        </content>
+        <beginButton>
+          <Button text="Concluir" type="Emphasized" press="onClosePrnModal" />
+        </beginButton>
+      </Dialog>
+    </dependents>
   </Page>
 </mvc:View>

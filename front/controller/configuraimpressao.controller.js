@@ -22,6 +22,23 @@ sap.ui.define(
         
       },
 
+      onOpenPrnModal: function (oEvent) {
+        const oSource = oEvent.getSource();
+        const oContext = oSource.getBindingContext("TipoEtq");
+        
+        if (!this._oPrnDialog) {
+          this._oPrnDialog = this.getView().byId("prnDialog");
+        }
+        this._oPrnDialog.setBindingContext(oContext, "TipoEtq");
+        this._oPrnDialog.open();
+      },
+
+      onClosePrnModal: function () {
+        if (this._oPrnDialog) {
+          this._oPrnDialog.close();
+        }
+      },
+
       carregaDados() {
         this.carregaImpressoras();
         this.carregaProcedures();

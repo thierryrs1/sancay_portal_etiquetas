@@ -271,7 +271,7 @@ sap.ui.define(
         
       },
 
-      onPrintPressed: async function() {
+      onPrintPressed: async function () {
         const tblList = this.getView().byId("tblList");
         const selectedIndices = tblList.getSelectedIndices();
         if (!selectedIndices || selectedIndices.length == 0) {
@@ -283,10 +283,10 @@ sap.ui.define(
           this.showErrorMessageBox("Erro", "Impressora não selecionada");
           return;
         }
-      
+
         const confVolumesLineKey = [];
-        let numVol = '';
         const tipo = [];
+        let numVol = '';
         const model = this.getModel("Data");
         for (let i = 0; i < selectedIndices.length; i++) {
           const path = tblList.getContextByIndex(selectedIndices[i]).getPath();
@@ -297,10 +297,11 @@ sap.ui.define(
           if (tipo.length === 0) { tipo.push(item.tipoEtq) };
         }
         try {
+          const tipoFinal = tipo[0] || data.tipoEtq;
           if ( data.VisualizaVol == true) {
-            await this.serverService.post("/etiqueta/imprimeVolumes", { impressora: data.Impressora,tipo:tipo[0], confVolumesLineKeys: confVolumesLineKey.join(","), visualizar:false, numVolume: numVol});
+            await this.serverService.post("/etiqueta/imprimeVolumes", { impressora: data.Impressora, tipo: tipoFinal, confVolumesLineKeys: confVolumesLineKey.join(","), visualizar:false, numVolume: numVol});
           } else {
-            await this.serverService.post("/etiqueta/imprimeVolumes", { impressora: data.Impressora,tipo:tipo[0], confVolumesLineKeys: confVolumesLineKey.join(","), visualizar: false});
+            await this.serverService.post("/etiqueta/imprimeVolumes", { impressora: data.Impressora, tipo: tipoFinal, confVolumesLineKeys: confVolumesLineKey.join(","), visualizar: false});
           }
           this.showSuccessMessageBox("Enviado", "Enviado para impressão");
           this.carregaDados();
@@ -337,10 +338,11 @@ sap.ui.define(
           if (tipo.length === 0) { tipo.push(item.tipoEtq) };
         }
         try {
+          const tipoFinal = tipo[0] || data.tipoEtq;
           if ( data.VisualizaVol == true) {
-            pdfName = await this.serverService.post("/etiqueta/imprimeVolumes", { impressora: data.Impressora,tipo:tipo[0], confVolumesLineKeys: confVolumesLineKey.join(","), visualizar:true, numVolume: numVol});
+            pdfName = await this.serverService.post("/etiqueta/imprimeVolumes", { impressora: data.Impressora, tipo: tipoFinal, confVolumesLineKeys: confVolumesLineKey.join(","), visualizar:true, numVolume: numVol});
           } else {
-            pdfName = await this.serverService.post("/etiqueta/imprimeVolumes", { impressora: data.Impressora,tipo:tipo[0], confVolumesLineKeys: confVolumesLineKey.join(","), visualizar:true});
+            pdfName = await this.serverService.post("/etiqueta/imprimeVolumes", { impressora: data.Impressora, tipo: tipoFinal, confVolumesLineKeys: confVolumesLineKey.join(","), visualizar:true});
           }
           this.openPDF(pdfName);
         } catch (err) {
