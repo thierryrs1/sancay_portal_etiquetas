@@ -75,7 +75,8 @@ sap.ui.define(
                   tipo: rowData.TipoEtiqueta,
                   confVolumesLineKeys: rowData.Chaves,
                   visualizar: false,
-                  numVolume: rowData.NumVolume
+                  numVolume: rowData.NumVolume,
+                  jsonDataList: rowData.JSON_Data ? [JSON.parse(rowData.JSON_Data)] : []
               });
               sap.ui.core.BusyIndicator.hide();
               MessageToast.show("Reimpressão enviada com sucesso!");
@@ -95,7 +96,8 @@ sap.ui.define(
                   tipo: rowData.TipoEtiqueta,
                   confVolumesLineKeys: rowData.Chaves,
                   visualizar: true,
-                  numVolume: rowData.NumVolume
+                  numVolume: rowData.NumVolume,
+                  jsonDataList: rowData.JSON_Data ? [JSON.parse(rowData.JSON_Data)] : []
               });
               sap.ui.core.BusyIndicator.hide();
               this.openPDF(pdfName);

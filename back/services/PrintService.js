@@ -13,6 +13,20 @@ class PrintService {
     if ((confVolumesLineKeys === '' && tipo !== 'SALDO' ) || impressora === '') {
       return;
     }
+
+    if (confVolumesLineKeys === 'Manual') {
+       const etqConf = await DirectDb.executeQuery(`SELECT "pathPrn" FROM SPS_TIPO_ETQ WHERE "tipoEtq" = ?`, [tipo]);
+       if (!etqConf || etqConf.length === 0) {
+           throw new Error("Modelo de etiqueta não existe mais");
+       }
+       const template = etqConf[0].pathPrn;
+       const parsedData = jsonDataList && jsonDataList.length > 0 ? jsonDataList[0] : {};
+       let prnFinal = this.populaPrn(template, parsedData);
+       
+       let pdf = await this.imprimeManual(impressora, tipo, prnFinal, visualizar, username, parsedData);
+       return pdf;
+    }
+
     let pdf = await this.imprimeEtq(impressora, tipo, [ confVolumesLineKeys ], visualizar, numVolume);
     
     // Gravar Log apenas para impressões reais
@@ -105,6 +119,10 @@ class PrintService {
     const printConf = await DirectDb.executeQuery(query, [tipo, impressora, impressora]);
     
     if (!printConf || printConf.length == 0) {
+      const etqCheck = await DirectDb.executeQuery(`SELECT 1 FROM SPS_TIPO_ETQ WHERE "tipoEtq" = ?`, [tipo]);
+      if (!etqCheck || etqCheck.length == 0) {
+        throw new Error(`Modelo de etiqueta não existe mais`);
+      }
       const msg = `Impressora ${impressora} não definida para tipo ${tipo}`;
       logError(`imprimeEtq: ${msg}`);
       throw new Error(msg);
@@ -318,7 +336,7 @@ class PrintService {
   async getQueues() {
     return new Promise((resolve, reject) => {
       const exec = require('child_process').exec;
-      exec('powershell -Command "Get-Printer | Select-Object Name, PrinterStatus, JobCount | ConvertTo-Json"', { maxBuffer: 1024 * 500 }, (error, stdout, stderr) => {
+      exec('powershell -Command "Get-Printer | Where-Object {$_.Name -notmatch \'(redirected|redireccionado)\'} | Select-Object Name, PrinterStatus, JobCount | ConvertTo-Json"', { maxBuffer: 1024 * 500 }, (error, stdout, stderr) => {
         if (error) {
           logError(`Erro getQueues: ${error.message}`);
           resolve([]);
