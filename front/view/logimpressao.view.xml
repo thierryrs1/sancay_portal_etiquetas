@@ -88,7 +88,10 @@
         <t:Column width="10rem" sortProperty="TipoEtiqueta" filterProperty="TipoEtiqueta">
           <Label text="Tipo de Etq" />
           <t:template>
-            <Text text="{Data>TipoEtiqueta}" />
+            <ObjectStatus
+                text="{Data>TipoEtiqueta}"
+                icon="{Data>Icone}"
+                state="Information" />
           </t:template>
         </t:Column>
         <t:Column width="15rem" sortProperty="Chaves" filterProperty="Chaves">
@@ -100,7 +103,9 @@
         <t:Column width="12rem" sortProperty="Impressora" filterProperty="Impressora">
           <Label text="Impressora" />
           <t:template>
-            <Text text="{Data>Impressora}" />
+            <ObjectIdentifier
+                title="{Data>Impressora}"
+                titleActive="false" />
           </t:template>
         </t:Column>
         <t:Column width="11rem" hAlign="Center">
@@ -108,7 +113,7 @@
           <t:template>
             <HBox alignItems="Center" justifyContent="Center">
               <Button icon="sap-icon://syntax" type="Transparent" press="onViewJSON" tooltip="Ver JSON" class="sapUiTinyMarginEnd" visible="{= !!${Data>JSON_Data}}"/>
-              <Button icon="sap-icon://sys-monitor" type="Transparent" press="onPreview" tooltip="Visualizar Etiqueta" class="sapUiTinyMarginEnd" />
+              <Button icon="sap-icon://show-edit" type="Transparent" press="onPreview" tooltip="Visualizar Etiqueta" class="sapUiTinyMarginEnd" />
               <Button icon="sap-icon://print" type="Transparent" press="onReprint" tooltip="Reimprimir Etiqueta" />
             </HBox>
           </t:template>

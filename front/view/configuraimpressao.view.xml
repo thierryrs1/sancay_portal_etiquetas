@@ -42,7 +42,7 @@
             <Title text="Tipos Etiquetas" class="sapUiTinyMarginTop"/>
           </t:extension>
         <t:columns>
-          <t:Column width="30%">
+          <t:Column width="25%">
             <Label
                 text="Tipo"
                 textAlign="Left"
@@ -58,6 +58,20 @@
                     visible="{= ${TipoEtq>tipoEtq}!==null}"
                     value="{TipoEtq>tipoEtq}" />
               </HBox>
+            </t:template>
+          </t:Column>
+          <t:Column width="25%">
+            <Link
+                text="Ícone (ver lista)"
+                href="https://ui5.sap.com/test-resources/sap/m/demokit/iconExplorer/webapp/index.html#"
+                target="_blank"
+                width="100%" />
+            <t:template>
+              <Input
+                  width="100%"
+                  visible="{= ${TipoEtq>tipoEtq}!==null}"
+                  value="{TipoEtq>icon}"
+                  placeholder="ex: sap-icon://print" />
             </t:template>
           </t:Column>
           <t:Column width="35%">

@@ -47,6 +47,7 @@ class ConfiguraImpressaoService {
       const query = `
         SELECT 
         "tipoEtq",
+        "icon",
         "pathPrn",
         "procedure"
         FROM SPS_TIPO_ETQ
@@ -96,9 +97,10 @@ class ConfiguraImpressaoService {
         const tipoEtq = t.tipoEtq.replace(/'/g, "''");
         tipos.push(tipoEtq);
         const pathPrn = t.pathPrn.replace(/'/g, "''");
+        const icon = t.icon ? t.icon.replace(/'/g, "''") : "";
         query += `
-        INSERT INTO SPS_TIPO_ETQ ("tipoEtq", "pathPrn", "procedure")
-        VALUES ('${tipoEtq}', '${pathPrn}', '${t.procedure}');
+        INSERT INTO SPS_TIPO_ETQ ("tipoEtq", "pathPrn", "procedure", "icon")
+        VALUES ('${tipoEtq}', '${pathPrn}', '${t.procedure}', '${icon}');
         `;
       }
       for (let i = 0; i < tipoImps.length; i++) {

@@ -41,6 +41,21 @@ sap.ui.define(
              dataIni, dataFin, login
           });
 
+          // Busca ícones
+          let tiposEtq = [];
+          try {
+              tiposEtq = await this.serverService.get("/configuraImpressao/getTiposEtq");
+          } catch(e) {}
+
+          const mapIcones = {};
+          tiposEtq.forEach(t => {
+              if (t.icon) mapIcones[t.tipoEtq] = t.icon;
+          });
+
+          res.forEach(r => {
+              r.Icone = mapIcones[r.TipoEtiqueta] || "sap-icon://tag";
+          });
+
           this.getModel("Data").setSizeLimit(res.length);
           this.setModelProperty("Data", "Items", res);
 
