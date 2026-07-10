@@ -114,6 +114,11 @@
           "pattern": "filaimpressao",
           "name": "filaimpressao",
           "target": "filaimpressao"
+        },
+        {
+          "pattern": "etiquetamanual",
+          "name": "etiquetamanual",
+          "target": "etiquetamanual"
         }
       ],
       "targets": {
@@ -159,6 +164,11 @@
         "filaimpressao": {
           "viewName": "filaimpressao",
           "viewId": "filaimpressao",
+          "viewLevel": 2
+        },
+        "etiquetamanual": {
+          "viewId": "etiquetamanual",
+          "viewName": "etiquetamanual",
           "viewLevel": 2
         }
       }

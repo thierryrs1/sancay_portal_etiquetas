@@ -41,6 +41,16 @@ class PrintController {
     }
   }
 
+  async imprimeManual(req, res) {
+    try {
+      const { impressora, tipoEtiqueta, prnFinal, visualizar, jsonData } = req.body;
+      const response = await printService.imprimeManual(impressora, tipoEtiqueta, prnFinal, visualizar, req.userInfo.username, jsonData);
+      res.send(response);
+    } catch (err) {
+      sendError(res, err);
+    }
+  }
+
 }
 
 module.exports = new PrintController();

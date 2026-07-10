@@ -41,6 +41,15 @@ class EtiquetaController {
     }
   }
 
+  async getTiposEtiquetaManual(req, res) {
+    try {
+      const result = await etiquetaService.getTiposEtiquetaManual(req.userInfo.username);
+      res.send(result);
+    } catch (err) {
+      sendError(res, err);
+    }
+  }
+
   async getImpressorasVolume(req, res) {
     try {
       const { tipoEtq } = req.params;

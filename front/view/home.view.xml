@@ -118,7 +118,7 @@
           width="100%"
           displayInline="true"
           fitContainer="true"
-          visible="{= ${Data>/Etiqueta_Volume} || ${Data>/Etiqueta_Palete} || ${Data>/Etiqueta_Expedicao}}">
+          visible="{= ${Data>/Etiqueta_Volume} || ${Data>/Etiqueta_Palete} || ${Data>/Etiqueta_Expedicao} || ${Data>/Etiqueta_Manual}}">
         <items>
           <GenericTile
               visible="{Data>/Etiqueta_Volume}"
@@ -127,6 +127,16 @@
               press="onClickEtiquetaVolume">
             <TileContent>
               <ImageContent src="sap-icon://print" />
+            </TileContent>
+          </GenericTile>
+
+          <GenericTile
+              visible="{Data>/Etiqueta_Manual}"
+              class="sapUiTinyMarginBegin sapUiTinyMarginTop tileLayout"
+              header="Etiqueta Manual"
+              press="onClickEtiquetaManual">
+            <TileContent>
+              <ImageContent src="sap-icon://customer-and-supplier" />
             </TileContent>
           </GenericTile>
 

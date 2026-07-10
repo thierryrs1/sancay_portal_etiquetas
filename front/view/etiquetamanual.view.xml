@@ -1,0 +1,49 @@
+<mvc:View
+    controllerName="sps.wms.controller.etiquetamanual"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core"
+    xmlns:t="sap.ui.table"
+    xmlns:f="sap.ui.layout.form"
+    height="100%">
+    
+    <Page title="Impressão Manual de Etiquetas" showNavButton="true" navButtonPress="onNavBack">
+        <content>
+            <Panel headerText="Configuração" class="sapUiSmallMargin">
+                <f:SimpleForm editable="true" layout="ResponsiveGridLayout" labelSpanXL="3" labelSpanL="3" labelSpanM="3" labelSpanS="12" adjustLabelSpan="false" emptySpanXL="4" emptySpanL="4" emptySpanM="4" emptySpanS="0" columnsXL="1" columnsL="1" columnsM="1" singleContainerFullSize="false">
+                    <f:content>
+                        <Label text="Tipo de Etiqueta" />
+                        <Select
+                            id="selTipoEtq"
+                            forceSelection="false"
+                            items="{ path: 'Config>/Tipos' }"
+                            change="onTipoChange">
+                            <core:Item key="{Config>tipoEtq}" text="{Config>tipoEtq}" />
+                        </Select>
+                        
+                        <Label text="Impressora" />
+                        <Select
+                            id="selImpressora"
+                            forceSelection="false"
+                            items="{ path: 'Config>/Impressoras' }">
+                            <core:Item key="{Config>impressora}" text="{Config>impressora}" />
+                        </Select>
+                    </f:content>
+                </f:SimpleForm>
+            </Panel>
+            
+            <Panel headerText="Dados da Etiqueta" class="sapUiSmallMargin" visible="{= ${Config>/Fields}.length > 0 }">
+                <f:SimpleForm id="formFields" editable="true" layout="ResponsiveGridLayout" labelSpanXL="3" labelSpanL="3" labelSpanM="3" labelSpanS="12" adjustLabelSpan="false" emptySpanXL="4" emptySpanL="4" emptySpanM="4" emptySpanS="0" columnsXL="1" columnsL="1" columnsM="1" singleContainerFullSize="false">
+                    <!-- Dynamic fields will be injected here by the controller -->
+                </f:SimpleForm>
+            </Panel>
+        </content>
+        <footer>
+            <Toolbar>
+                <ToolbarSpacer />
+                <Button icon="sap-icon://show-edit" text="Visualizar" press="onPrint(true)" type="Transparent" enabled="{= ${Config>/Fields}.length > 0 }" />
+                <Button icon="sap-icon://print" text="Imprimir" press="onPrint(false)" type="Emphasized" enabled="{= ${Config>/Fields}.length > 0 }" />
+            </Toolbar>
+        </footer>
+    </Page>
+</mvc:View>

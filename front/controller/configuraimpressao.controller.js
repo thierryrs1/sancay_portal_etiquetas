@@ -141,14 +141,19 @@ sap.ui.define(
         this.getModel("TipoEtq").refresh();
       },
 
-      deleteTipoImp(ev) {
-        const btn = ev.getSource();
-        const bind = btn.getParent().getBindingContext("TipoImp");
-        const path = bind.getPath();
-        const idx = path.replace("/list/", "");
+      deleteTipoImp(oEvent) {
+        const rowData = oEvent.getSource().getBindingContext("TipoImp").getProperty();
+        const path = oEvent.getSource().getBindingContext("TipoImp").getPath();
+        const idx = parseInt(path.split("/")[2]);
         const list = this.getModelProperty("TipoImp", "list");
         list.splice(idx, 1);
-        this.getModel("TipoImp").refresh();
+        this.setModelProperty("TipoImp", "list", list);
+      },
+
+      onManualSelect: function(oEvent) {
+        const selected = oEvent.getParameter("selected");
+        const path = oEvent.getSource().getBindingContext("TipoEtq").getPath();
+        this.getModel("TipoEtq").setProperty(path + "/isManual", selected ? "Y" : "N");
       },
 
       addTipoImp() {

@@ -48,6 +48,7 @@ class ConfiguraImpressaoService {
         SELECT 
         "tipoEtq",
         "icon",
+        "isManual",
         "pathPrn",
         "procedure"
         FROM SPS_TIPO_ETQ
@@ -98,9 +99,10 @@ class ConfiguraImpressaoService {
         tipos.push(tipoEtq);
         const pathPrn = t.pathPrn.replace(/'/g, "''");
         const icon = t.icon ? t.icon.replace(/'/g, "''") : "";
+        const isManual = t.isManual === "Y" || t.isManual === true ? "Y" : "N";
         query += `
-        INSERT INTO SPS_TIPO_ETQ ("tipoEtq", "pathPrn", "procedure", "icon")
-        VALUES ('${tipoEtq}', '${pathPrn}', '${t.procedure}', '${icon}');
+        INSERT INTO SPS_TIPO_ETQ ("tipoEtq", "pathPrn", "procedure", "icon", "isManual")
+        VALUES ('${tipoEtq}', '${pathPrn}', '${t.procedure}', '${icon}', '${isManual}');
         `;
       }
       for (let i = 0; i < tipoImps.length; i++) {

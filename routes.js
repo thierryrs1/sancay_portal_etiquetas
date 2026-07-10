@@ -26,6 +26,7 @@ routes.get('/getPerms', authMiddleware, loginController.getPerms);
 routes.use('/etiqueta', authMiddleware);
 
 routes.get('/etiqueta/getTiposEtiquetaVolume', etiquetaController.getTiposEtiquetaVolume);
+routes.get('/etiqueta/getTiposEtiquetaManual', etiquetaController.getTiposEtiquetaManual);
 routes.get('/etiqueta/getFornecedoresVolume', etiquetaController.getFornecedoresVolume);																	  
 routes.get('/etiqueta/getEstufas', etiquetaController.getEstufas);
 routes.get('/etiqueta/getOrdensProducao', etiquetaController.getOrdensProducao);
@@ -35,6 +36,7 @@ routes.post('/etiqueta/getLogImpressao', etiquetaController.getLogImpressao);
 
 routes.post("/etiqueta/imprimeEtq", printController.imprimeEtq);
 routes.post("/etiqueta/imprimeVolumes", printController.imprimeVolumes);
+routes.post("/etiqueta/imprimeManual", printController.imprimeManual);
 routes.post('/printer/getQueues', printController.getQueues);
 routes.post('/printer/clearQueue', printController.clearQueue);
 

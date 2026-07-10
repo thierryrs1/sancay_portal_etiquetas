@@ -48,6 +48,32 @@ class PrintService {
     return pdf;
   }
 
+  async imprimeManual(impressora, tipoEtiqueta, prnFinal, visualizar, username, jsonData) {
+    let pdf = null;
+    if (visualizar) {
+      pdf = await this.visualizarEtiqueta(prnFinal);
+    } else {
+      let prnEncode = iconv.encode(prnFinal, "latin1");
+      this.sendToPrinter(impressora, prnEncode);
+      try {
+         const jsonStr = (jsonData ? JSON.stringify(jsonData) : '').replace(/'/g, "''");
+         const usernameEscaped = String(username || '').replace(/'/g, "''");
+         const impressoraEscaped = String(impressora).replace(/'/g, "''");
+         const tipoEscaped = String(tipoEtiqueta).replace(/'/g, "''");
+         
+         const d = new Date();
+         const pad = (n) => (n < 10 ? '0'+n : n);
+         const exactTime = `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+         
+         const query = `INSERT INTO "SPS_LOG_IMPRESSAO" ("DataHora", "Login", "TipoEtiqueta", "Impressora", "Chaves", "JSON_Data") VALUES (TO_TIMESTAMP('${exactTime}', 'YYYY-MM-DD HH24:MI:SS'), '${usernameEscaped}', '${tipoEscaped}', '${impressoraEscaped}', 'Manual', '${jsonStr}')`;
+         await DirectDb.executeQuery(query);
+      } catch(logErr) {
+         logError(`Erro gravando log de impressão manual: ` + logErr.message);
+      }
+    }
+    return pdf;
+  }
+
 
   async imprimeEtq(impressora, tipo, parms, visualizar, numVol) {
     if (!tipo || tipo == "") {

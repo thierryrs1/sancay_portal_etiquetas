@@ -27,6 +27,12 @@ class EtiquetaService {
   async getTiposEtiquetaVolume(username) {
     try {
       let res = await DirectDb.executeProcedure("SP_SPS_PORTAL_TIPOS_ETQ_VOLUME");
+      try {
+        const manuals = await DirectDb.executeQuery(`SELECT "tipoEtq" FROM SPS_TIPO_ETQ WHERE "isManual" = 'Y'`);
+        const manualTipos = manuals.map(m => m.tipoEtq);
+        res = res.filter(r => !manualTipos.includes(r.tipoEtq));
+      } catch (e) {}
+
       if (username !== 'manager') {
         const perms = await DirectDb.executeQuery(`SELECT "etiqueta" FROM SPS_PERMISSOES_ETQ WHERE "login" = ? AND "acesso" = 'Y'`, [username]);
         const allowed = perms.map(p => p.etiqueta);
@@ -36,6 +42,23 @@ class EtiquetaService {
     } catch (ex) {
       throw new Error(
         `Erro obtendo lista de tipos de etiqueta: ` + errors.getError(ex)
+      );
+    }
+  }
+
+  async getTiposEtiquetaManual(username) {
+    try {
+      let res = await DirectDb.executeQuery(`SELECT "tipoEtq", "icon", "isManual", "pathPrn", "procedure" FROM SPS_TIPO_ETQ WHERE "isManual" = 'Y'`);
+      
+      if (username !== 'manager') {
+        const perms = await DirectDb.executeQuery(`SELECT "etiqueta" FROM SPS_PERMISSOES_ETQ WHERE "login" = ? AND "acesso" = 'Y'`, [username]);
+        const allowed = perms.map(p => p.etiqueta);
+        res = res.filter(r => allowed.includes(r.tipoEtq));
+      }
+      return res;
+    } catch (ex) {
+      throw new Error(
+        `Erro obtendo lista de tipos de etiqueta manual: ` + errors.getError(ex)
       );
     }
   }

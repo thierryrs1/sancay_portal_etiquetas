@@ -22,8 +22,12 @@ sap.ui.define(
           this.setModelProperty("Data", k, perms[k]);
         });
       },
-      onClickEtiquetaVolume: function() {
-        this.navTo("etiquetavolume");
+      onClickEtiquetaVolume() {
+        this.getRouter().navTo("etiquetavolume");
+      },
+
+      onClickEtiquetaManual() {
+        this.getRouter().navTo("etiquetamanual");
       },
       onClickPermissoes: function() {
         this.navTo("permissoes");
