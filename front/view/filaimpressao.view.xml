@@ -31,6 +31,7 @@
       <Toolbar class="sapUiSmallMarginTop sapUiSmallMarginBegin sapUiSmallMarginEnd">
         <Title text="Impressoras Instaladas no Servidor" level="H2" />
         <ToolbarSpacer />
+        <Button icon="sap-icon://sys-monitor" text="Reiniciar Spooler" press="onRestartSpooler" type="Emphasized" />
         <Button icon="sap-icon://refresh" text="Atualizar" press="carregaDados" />
       </Toolbar>
       

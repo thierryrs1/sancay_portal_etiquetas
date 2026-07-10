@@ -41,6 +41,15 @@ class PrintController {
     }
   }
 
+  async restartSpooler(req, res) {
+    try {
+      const result = await printService.restartSpooler();
+      res.send(result);
+    } catch(err) {
+      sendError(res, err);
+    }
+  }
+
   async imprimeManual(req, res) {
     try {
       const { impressora, tipoEtiqueta, prnFinal, visualizar, jsonData } = req.body;

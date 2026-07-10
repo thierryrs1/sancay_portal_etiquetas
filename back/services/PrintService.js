@@ -348,6 +348,19 @@ class PrintService {
     });
   }
 
+  async restartSpooler() {
+    return new Promise((resolve, reject) => {
+      const exec = require('child_process').exec;
+      exec(`powershell -Command "Restart-Service -Name Spooler -Force"`, (error, stdout, stderr) => {
+        if (error) {
+          reject(error);
+          return;
+        }
+        resolve({ success: true });
+      });
+    });
+  }
+
 }
 
 module.exports = new PrintService;

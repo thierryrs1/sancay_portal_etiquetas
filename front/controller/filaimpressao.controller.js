@@ -62,6 +62,26 @@ sap.ui.define(
           sap.ui.core.BusyIndicator.hide();
         }
       },
+      onRestartSpooler: function () {
+        MessageBox.show("Deseja realmente reiniciar o serviço Spooler do servidor? Isso afetará todas as impressoras momentaneamente.", {
+          icon: MessageBox.Icon.WARNING,
+          title: "Atenção",
+          actions: [MessageBox.Action.YES, MessageBox.Action.NO],
+          onClose: async (oAction) => {
+            if (oAction === sap.m.MessageBox.Action.YES) {
+              this.getView().setBusy(true);
+              try {
+                await this.serverService.post("/printer/restartSpooler", {});
+                MessageToast.show("Spooler reiniciado com sucesso.");
+                this.carregaDados();
+              } catch (ex) {
+                this.showExceptionMessageBox("Erro", "Erro ao reiniciar Spooler", ex);
+              }
+              this.getView().setBusy(false);
+            }
+          }
+        });
+      },
 
       onClearQueue: async function (oEvent) {
         const rowData = oEvent.getSource().getBindingContext("Data").getProperty();
