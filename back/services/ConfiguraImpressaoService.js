@@ -9,14 +9,19 @@ class ConfiguraImpressaoService {
 
   async getImpressorasServidor() {
     try {
-      const res = printer.getPrinters();
+      const printService = require('./PrintService');
+      const queues = await printService.getQueues();
+      let filteredPrinters = queues.filter(q => q && q.Name).map(q => ({ name: q.Name }));
+
       const usedPrinters = await DirectDb.executeQuery(`SELECT DISTINCT "impressora" FROM SPS_TIPO_IMP`);
       for (let i = 0; i < usedPrinters.length; i++) {
-        if (usedPrinters[i].impressora && !(res.find((p) => p.name == usedPrinters[i].impressora))) {
-          res.push({ name: usedPrinters[i].impressora });
+        const impName = usedPrinters[i].impressora;
+        // não adiciona se for redirecionada
+        if (impName && !/(redirected|redirecionado|redireccionado)/i.test(impName) && !(filteredPrinters.find((p) => p.name == impName))) {
+          filteredPrinters.push({ name: impName });
         }
       }
-      return res;
+      return filteredPrinters;
     } catch (ex) {
       throw new Error(
         `Erro obtendo impressoras: ` + errors.getError(ex)

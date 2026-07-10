@@ -8,7 +8,7 @@ const axios = require ('axios');
 const path = require('path');
 class PrintService {
 
-  async imprimeVolumes(impressora, tipo, confVolumesLineKeys, visualizar, numVolume, username, jsonDataList) {
+  async imprimeVolumes(impressora, tipo, confVolumesLineKeys, visualizar, numVolume, username, jsonDataList, logIdOrigem, motivoReimpressao) {
     logDebug(`start imprimeVolumes impressora=${impressora}, volumeIds=${confVolumesLineKeys}`);
     if ((confVolumesLineKeys === '' && tipo !== 'SALDO' ) || impressora === '') {
       return;
@@ -23,7 +23,7 @@ class PrintService {
        const parsedData = jsonDataList && jsonDataList.length > 0 ? jsonDataList[0] : {};
        let prnFinal = this.populaPrn(template, parsedData);
        
-       let pdf = await this.imprimeManual(impressora, tipo, prnFinal, visualizar, username, parsedData);
+       let pdf = await this.imprimeManual(impressora, tipo, prnFinal, visualizar, username, parsedData, logIdOrigem, motivoReimpressao);
        return pdf;
     }
 
@@ -49,7 +49,11 @@ class PrintService {
             const jsonStr = (jsonArray[i] ? JSON.stringify(jsonArray[i]) : '').replace(/'/g, "''");
             
             if (ch !== '') {
-               const query = `INSERT INTO "SPS_LOG_IMPRESSAO" ("DataHora", "Login", "TipoEtiqueta", "Impressora", "Chaves", "JSON_Data") VALUES (TO_TIMESTAMP('${exactTime}', 'YYYY-MM-DD HH24:MI:SS'), '${usernameEscaped}', '${tipoEscaped}', '${impressoraEscaped}', '${ch}', '${jsonStr}')`;
+               const reimpressao = logIdOrigem ? 'Y' : 'N';
+               const motivo = logIdOrigem ? String(motivoReimpressao).replace(/'/g, "''") : '';
+               const idOrigemStr = logIdOrigem ? String(logIdOrigem) : 'NULL';
+
+               const query = `INSERT INTO "SPS_LOG_IMPRESSAO" ("DataHora", "Login", "TipoEtiqueta", "Impressora", "Chaves", "JSON_Data", "Reimpressao", "IdLogOrigem", "MotivoReimpressao") VALUES (TO_TIMESTAMP('${exactTime}', 'YYYY-MM-DD HH24:MI:SS'), '${usernameEscaped}', '${tipoEscaped}', '${impressoraEscaped}', '${ch}', '${jsonStr}', '${reimpressao}', ${idOrigemStr}, '${motivo}')`;
                await DirectDb.executeQuery(query);
             }
          }
@@ -62,7 +66,7 @@ class PrintService {
     return pdf;
   }
 
-  async imprimeManual(impressora, tipoEtiqueta, prnFinal, visualizar, username, jsonData) {
+  async imprimeManual(impressora, tipoEtiqueta, prnFinal, visualizar, username, jsonData, logIdOrigem, motivoReimpressao) {
     let pdf = null;
     if (visualizar) {
       pdf = await this.visualizarEtiqueta(prnFinal);
@@ -79,7 +83,11 @@ class PrintService {
          const pad = (n) => (n < 10 ? '0'+n : n);
          const exactTime = `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
          
-         const query = `INSERT INTO "SPS_LOG_IMPRESSAO" ("DataHora", "Login", "TipoEtiqueta", "Impressora", "Chaves", "JSON_Data") VALUES (TO_TIMESTAMP('${exactTime}', 'YYYY-MM-DD HH24:MI:SS'), '${usernameEscaped}', '${tipoEscaped}', '${impressoraEscaped}', 'Manual', '${jsonStr}')`;
+         const reimpressao = logIdOrigem ? 'Y' : 'N';
+         const motivo = logIdOrigem ? String(motivoReimpressao).replace(/'/g, "''") : '';
+         const idOrigemStr = logIdOrigem ? String(logIdOrigem) : 'NULL';
+
+         const query = `INSERT INTO "SPS_LOG_IMPRESSAO" ("DataHora", "Login", "TipoEtiqueta", "Impressora", "Chaves", "JSON_Data", "Reimpressao", "IdLogOrigem", "MotivoReimpressao") VALUES (TO_TIMESTAMP('${exactTime}', 'YYYY-MM-DD HH24:MI:SS'), '${usernameEscaped}', '${tipoEscaped}', '${impressoraEscaped}', 'Manual', '${jsonStr}', '${reimpressao}', ${idOrigemStr}, '${motivo}')`;
          await DirectDb.executeQuery(query);
       } catch(logErr) {
          logError(`Erro gravando log de impressão manual: ` + logErr.message);

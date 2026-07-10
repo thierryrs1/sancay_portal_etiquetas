@@ -16,8 +16,22 @@ sap.ui.define(
         this.setModelProperty("Data", "DataIni", dataI);
         this.setModelProperty("Data", "DataFin", dataF);
         this.setModelProperty("Data", "Login", "");
+        this.setModelProperty("Data", "TipoEtiqueta", "");
+        this.setModelProperty("Data", "Impressora", "");
+        this.setModelProperty("Data", "Chaves", "");
+        this.setModelProperty("Data", "IsReimpressa", "");
+        this.setModelProperty("Data", "IdEtiqueta", "");
         this.setModel(new JSONModel({ currentJson: "" }), "DialogModel");
         
+        try {
+            const filtros = await this.serverService.get("/etiqueta/getFiltrosLogImpressao");
+            this.setModelProperty("Data", "FilterLogins", filtros.logins);
+            this.setModelProperty("Data", "FilterTipos", filtros.tipos);
+            this.setModelProperty("Data", "FilterImpressoras", filtros.impressoras);
+            if (filtros.minDate) this.setModelProperty("Data", "DataIni", filtros.minDate);
+            if (filtros.maxDate) this.setModelProperty("Data", "DataFin", filtros.maxDate);
+        } catch(e) {}
+
         await this.carregaDados();
       },
       
@@ -31,6 +45,11 @@ sap.ui.define(
           const dataIni = this.getModelProperty("Data", "DataIni");
           const dataFin = this.getModelProperty("Data", "DataFin");
           const login = this.getModelProperty("Data", "Login") || '';
+          const tipoEtiqueta = this.getModelProperty("Data", "TipoEtiqueta") || '';
+          const impressora = this.getModelProperty("Data", "Impressora") || '';
+          const chaves = this.getModelProperty("Data", "Chaves") || '';
+          const isReimpressa = this.getModelProperty("Data", "IsReimpressa") || '';
+          const idEtiqueta = this.getModelProperty("Data", "IdEtiqueta") || '';
 
           if (!dataIni || !dataFin) {
             sap.ui.core.BusyIndicator.hide();
@@ -38,7 +57,7 @@ sap.ui.define(
           }
 
           const res = await this.serverService.post("/etiqueta/getLogImpressao", {
-             dataIni, dataFin, login
+             dataIni, dataFin, login, tipoEtiqueta, impressora, chaves, isReimpressa, idEtiqueta
           });
 
           // Busca ícones
@@ -68,23 +87,87 @@ sap.ui.define(
       
       onReprint: async function(oEvent) {
           const rowData = oEvent.getSource().getBindingContext("Data").getProperty();
+          
           try {
               sap.ui.core.BusyIndicator.show(0);
-              await this.serverService.post("/etiqueta/imprimeVolumes", {
-                  impressora: rowData.Impressora,
-                  tipo: rowData.TipoEtiqueta,
-                  confVolumesLineKeys: rowData.Chaves,
-                  visualizar: false,
-                  numVolume: rowData.NumVolume,
-                  jsonDataList: rowData.JSON_Data ? [JSON.parse(rowData.JSON_Data)] : []
-              });
+              const { exists } = await this.serverService.post("/etiqueta/validaEtiqueta", { tipo: rowData.TipoEtiqueta });
               sap.ui.core.BusyIndicator.hide();
-              MessageToast.show("Reimpressão enviada com sucesso!");
-              await this.carregaDados(); // Atualiza a tabela com a nova impressão
+              
+              if (!exists) {
+                  MessageBox.error("Modelo de etiqueta não existe mais.");
+                  return;
+              }
           } catch(ex) {
               sap.ui.core.BusyIndicator.hide();
-              this.showExceptionMessageBox("Erro", "Erro ao reimprimir", ex);
+              this.showExceptionMessageBox("Erro", "Erro ao validar etiqueta", ex);
+              return;
           }
+
+          if (!this._reprintDialog) {
+              this._reprintDialog = new sap.m.Dialog({
+                  title: "Motivo da Reimpressão",
+                  contentWidth: "400px",
+                  content: new sap.m.VBox({
+                      items: [
+                          new sap.m.Label({ text: "Selecione ou digite o motivo:" }).addStyleClass("sapUiTinyMarginBottom"),
+                          new sap.m.ComboBox(this.createId("motivoComboBox"), {
+                              width: "100%",
+                              items: [
+                                  new sap.ui.core.Item({ key: "Etiqueta Rasgada/Amassada", text: "Etiqueta Rasgada/Amassada" }),
+                                  new sap.ui.core.Item({ key: "Impressora Falhou/Atolou", text: "Impressora Falhou/Atolou" }),
+                                  new sap.ui.core.Item({ key: "Troca de Ribbon/Papel", text: "Troca de Ribbon/Papel" }),
+                                  new sap.ui.core.Item({ key: "Etiqueta Ilegível/Apagada", text: "Etiqueta Ilegível/Apagada" })
+                              ]
+                          })
+                      ]
+                  }).addStyleClass("sapUiSmallMargin"),
+                  beginButton: new sap.m.Button({
+                      text: "Confirmar",
+                      type: "Emphasized",
+                      press: async () => {
+                          const motivo = this.byId("motivoComboBox").getValue();
+                          if (!motivo) {
+                              MessageToast.show("Informe o motivo da reimpressão.");
+                              return;
+                          }
+                          this._reprintDialog.close();
+                          
+                          try {
+                              sap.ui.core.BusyIndicator.show(0);
+                              await this.serverService.post("/etiqueta/imprimeVolumes", {
+                                  impressora: this._currentReprintRow.Impressora,
+                                  tipo: this._currentReprintRow.TipoEtiqueta,
+                                  confVolumesLineKeys: this._currentReprintRow.Chaves,
+                                  visualizar: false,
+                                  numVolume: this._currentReprintRow.NumVolume,
+                                  jsonDataList: this._currentReprintRow.JSON_Data ? [JSON.parse(this._currentReprintRow.JSON_Data)] : [],
+                                  logIdOrigem: (this._currentReprintRow.Reimpressao === 'Y' && this._currentReprintRow.IdLogOrigem) ? this._currentReprintRow.IdLogOrigem : this._currentReprintRow.LogId,
+                                  motivoReimpressao: motivo
+                              });
+                              sap.ui.core.BusyIndicator.hide();
+                              MessageToast.show("Reimpressão enviada com sucesso!");
+                              await this.carregaDados();
+                          } catch(ex) {
+                              sap.ui.core.BusyIndicator.hide();
+                              this.showExceptionMessageBox("Erro", "Erro ao reimprimir", ex);
+                          }
+                      }
+                  }),
+                  endButton: new sap.m.Button({
+                      text: "Cancelar",
+                      press: () => {
+                          this._reprintDialog.close();
+                      }
+                  }),
+                  afterClose: () => {
+                      this.byId("motivoComboBox").setValue("");
+                  }
+              });
+              this.getView().addDependent(this._reprintDialog);
+          }
+          
+          this._currentReprintRow = rowData;
+          this._reprintDialog.open();
       },
 
       onPreview: async function(oEvent) {

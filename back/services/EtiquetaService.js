@@ -100,14 +100,42 @@ class EtiquetaService {
     }
   }
 
-  async getLogImpressao(dataIni, dataFin, login) {
+  async getLogImpressao(dataIni, dataFin, login, tipoEtiqueta, impressora, chaves, isReimpressa, idEtiqueta) {
     try {
-      const res = await DirectDb.executeProcedure("SP_SPS_PORTAL_LOG_IMPRESSAO", [dataIni, dataFin, login || '']);
+      const res = await DirectDb.executeProcedure("SP_SPS_PORTAL_LOG_IMPRESSAO", [dataIni, dataFin, login || '', tipoEtiqueta || '', impressora || '', chaves || '', isReimpressa || '', idEtiqueta || '']);
       return res;
     } catch (ex) {
       throw new Error(
         `Erro obtendo log de impressões: ` + errors.getError(ex)
       );
+    }
+  }
+
+  async getFiltrosLogImpressao() {
+    try {
+      const logins = await DirectDb.executeQuery(`SELECT DISTINCT "Login" FROM "SPS_LOG_IMPRESSAO" WHERE "Login" IS NOT NULL AND "Login" != '' ORDER BY "Login"`);
+      const tipos = await DirectDb.executeQuery(`SELECT DISTINCT "TipoEtiqueta" FROM "SPS_LOG_IMPRESSAO" WHERE "TipoEtiqueta" IS NOT NULL AND "TipoEtiqueta" != '' ORDER BY "TipoEtiqueta"`);
+      const impressoras = await DirectDb.executeQuery(`SELECT DISTINCT "Impressora" FROM "SPS_LOG_IMPRESSAO" WHERE "Impressora" IS NOT NULL AND "Impressora" != '' ORDER BY "Impressora"`);
+      const minMaxDates = await DirectDb.executeQuery(`SELECT TO_VARCHAR(MIN("DataHora"), 'YYYY-MM-DD') AS "MinDate", TO_VARCHAR(MAX("DataHora"), 'YYYY-MM-DD') AS "MaxDate" FROM "SPS_LOG_IMPRESSAO"`);
+
+      return {
+        logins: logins.map(x => x.Login),
+        tipos: tipos.map(x => x.TipoEtiqueta),
+        impressoras: impressoras.map(x => x.Impressora),
+        minDate: minMaxDates && minMaxDates.length > 0 ? minMaxDates[0].MinDate : null,
+        maxDate: minMaxDates && minMaxDates.length > 0 ? minMaxDates[0].MaxDate : null
+      };
+    } catch (ex) {
+      throw new Error(`Erro obtendo filtros do log: ` + errors.getError(ex));
+    }
+  }
+
+  async validaEtiqueta(tipoEtq) {
+    try {
+      const etqConf = await DirectDb.executeQuery(`SELECT 1 FROM SPS_TIPO_ETQ WHERE "tipoEtq" = ?`, [tipoEtq]);
+      return etqConf && etqConf.length > 0;
+    } catch (ex) {
+      return false; // se der erro de banco, não trava, só diz que não achou (ou podemos relançar)
     }
   }
 

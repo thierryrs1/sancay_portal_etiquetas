@@ -71,9 +71,28 @@ class EtiquetaController {
 
   async getLogImpressao(req, res) {
     try {
-      const { dataIni, dataFin, login } = req.body;
-      const result = await etiquetaService.getLogImpressao(dataIni, dataFin, login);
+      const { dataIni, dataFin, login, tipoEtiqueta, impressora, chaves, isReimpressa, idEtiqueta } = req.body;
+      const result = await etiquetaService.getLogImpressao(dataIni, dataFin, login, tipoEtiqueta, impressora, chaves, isReimpressa, idEtiqueta);
       res.send(result);
+    } catch (err) {
+      sendError(res, err);
+    }
+  }
+
+  async getFiltrosLogImpressao(req, res) {
+    try {
+      const result = await etiquetaService.getFiltrosLogImpressao();
+      res.send(result);
+    } catch (err) {
+      sendError(res, err);
+    }
+  }
+
+  async validaEtiqueta(req, res) {
+    try {
+      const { tipo } = req.body;
+      const exists = await etiquetaService.validaEtiqueta(tipo);
+      res.send({ exists });
     } catch (err) {
       sendError(res, err);
     }

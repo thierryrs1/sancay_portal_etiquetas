@@ -52,18 +52,58 @@
             columnsM="3"
             singleContainerFullSize="false">
           <f:content>
-            <core:Title text="Filtros" />
+            <core:Title text="Período / Busca" />
             <Label text="Data Início" />
             <DatePicker 
                 value="{Data>/DataIni}" 
-                valueFormat="yyyy-MM-dd"/>
+                valueFormat="yyyy-MM-dd"
+                change="onSearchPressed" />
             <Label text="Data Fim" />
             <DatePicker 
                 value="{Data>/DataFin}" 
-                valueFormat="yyyy-MM-dd"/>
-            <Label text="Login (Opcional)" />
+                valueFormat="yyyy-MM-dd"
+                change="onSearchPressed" />
+            <Label text="ID Etiqueta" />
             <Input 
-                value="{Data>/Login}" />
+                value="{Data>/IdEtiqueta}" 
+                submit="onSearchPressed" 
+                placeholder="Ex: 46" />
+
+            <core:Title text="Usuário / Tipo" />
+            <Label text="Login" />
+            <ComboBox 
+                items="{Data>/FilterLogins}" 
+                value="{Data>/Login}"
+                change="onSearchPressed">
+              <core:Item key="{Data>}" text="{Data>}" />
+            </ComboBox>
+            <Label text="Tipo Etq" />
+            <ComboBox 
+                items="{Data>/FilterTipos}" 
+                value="{Data>/TipoEtiqueta}"
+                change="onSearchPressed">
+              <core:Item key="{Data>}" text="{Data>}" />
+            </ComboBox>
+            <Label text="É Reimpressão?" />
+            <ComboBox 
+                selectedKey="{Data>/IsReimpressa}"
+                change="onSearchPressed">
+              <core:Item key="" text="Todos" />
+              <core:Item key="Y" text="Sim" />
+              <core:Item key="N" text="Não" />
+            </ComboBox>
+
+            <core:Title text="Impressora / Dados" />
+            <Label text="Impressora" />
+            <ComboBox 
+                items="{Data>/FilterImpressoras}" 
+                value="{Data>/Impressora}"
+                change="onSearchPressed">
+              <core:Item key="{Data>}" text="{Data>}" />
+            </ComboBox>
+            <Label text="Parâmetros" />
+            <Input value="{Data>/Chaves}" submit="onSearchPressed" />
+            <Label text="" />
             <Button
                 text="Pesquisar"
                 press="onSearchPressed"
@@ -73,10 +113,21 @@
         </f:SimpleForm>
       </t:extension>
       <t:columns>
+        <t:Column width="6rem" sortProperty="LogId" filterProperty="LogId">
+          <Label text="ID" />
+          <t:template>
+            <Text text="{Data>LogId}" />
+          </t:template>
+        </t:Column>
         <t:Column width="11rem" sortProperty="DataHoraFormatada" filterProperty="DataHoraFormatada">
           <Label text="Data / Hora" />
           <t:template>
-            <Text text="{Data>DataHoraFormatada}" />
+            <HBox alignItems="Center">
+              <VBox width="1.5rem" alignItems="Center" justifyContent="Center">
+                <core:Icon src="sap-icon://copy" color="Critical" tooltip="Esta é uma cópia da etiqueta {Data>IdLogOrigem}" visible="{= ${Data>Reimpressao} === 'Y'}" />
+              </VBox>
+              <Text text="{Data>DataHoraFormatada}" />
+            </HBox>
           </t:template>
         </t:Column>
         <t:Column width="8rem" sortProperty="Login" filterProperty="Login">
@@ -98,6 +149,12 @@
           <Label text="Parâmetros" />
           <t:template>
             <Text text="{Data>Chaves}" />
+          </t:template>
+        </t:Column>
+        <t:Column width="12rem" sortProperty="MotivoReimpressao" filterProperty="MotivoReimpressao">
+          <Label text="Motivo" />
+          <t:template>
+            <Text text="{Data>MotivoReimpressao}" />
           </t:template>
         </t:Column>
         <t:Column width="12rem" sortProperty="Impressora" filterProperty="Impressora">
