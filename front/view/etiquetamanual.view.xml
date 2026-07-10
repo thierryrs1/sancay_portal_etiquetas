@@ -30,11 +30,9 @@
                         </Select>
 
                         <Label text="Parâmetro" visible="{Config>/HasProcedure}" />
-                        <Input 
-                            value="{Config>/Parametro}" 
-                            visible="{Config>/HasProcedure}" 
-                            placeholder="Digite o parâmetro da busca..."
-                            submit="onBuscarProcedure" />
+                        <VBox id="vbParametro" visible="{Config>/HasProcedure}" width="100%">
+                            <!-- Populated dynamically -->
+                        </VBox>
                         <Label visible="{Config>/HasProcedure}" />
                         <Button 
                             text="Buscar Dados" 

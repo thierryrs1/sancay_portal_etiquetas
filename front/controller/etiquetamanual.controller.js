@@ -37,6 +37,7 @@ sap.ui.define([
                       this.getModel("Config").setProperty("/HasProcedure", true);
                       this.getModel("Config").setProperty("/Fields", []);
                       this.byId("formFields").removeAllContent();
+                      await this._configuraParametroField(tipos[0].tipoEtq);
                   } else {
                       this.getModel("Config").setProperty("/HasProcedure", false);
                       await this._geraCamposDinamicos(tipos[0].pathPrn);
@@ -63,6 +64,7 @@ sap.ui.define([
                   this.getModel("Config").setProperty("/HasProcedure", true);
                   this.getModel("Config").setProperty("/Fields", []);
                   this.byId("formFields").removeAllContent();
+                  await this._configuraParametroField(tipoSel);
               } else {
                   this.getModel("Config").setProperty("/HasProcedure", false);
                   await this._geraCamposDinamicos(tipoObj.pathPrn);
@@ -79,6 +81,61 @@ sap.ui.define([
                   this.byId("selImpressora").setSelectedKey(imps[0].impressora);
               }
           } catch(e) {}
+      },
+
+      _configuraParametroField: async function(tipoSel) {
+          const vb = this.byId("vbParametro");
+          if (!vb) return;
+          vb.removeAllItems();
+          
+          let tagConfig = null;
+          try {
+              const bdTags = await this.serverService.post("/configuraImpressao/getTags", { tipoEtq: tipoSel });
+              tagConfig = bdTags.find(b => b.tag === "@PARAMETRO@");
+          } catch (e) {
+              console.error("Erro carregando tags para parametro", e);
+          }
+          
+          if (tagConfig && tagConfig.consulta) {
+              const cb = new sap.m.ComboBox({
+                  selectedKey: "{Config>/Parametro}",
+                  width: "100%",
+                  showSecondaryValues: true,
+                  filterSecondaryValues: true
+              });
+              try {
+                  const items = await this.serverService.post("/etiqueta/executaQueryDinamica", { query: tagConfig.consulta });
+                  const modelName = "Dropdown_PARAMETRO";
+                  this.setModel(new sap.ui.model.json.JSONModel(items), modelName);
+                  
+                  let keyCol = "Key";
+                  let textCol = "Text";
+                  if (items && items.length > 0) {
+                      const cols = Object.keys(items[0]);
+                      if (cols.length > 0) keyCol = cols[0];
+                      if (cols.length > 1) textCol = cols[1];
+                      else textCol = keyCol;
+                  }
+                  
+                  cb.bindItems({
+                      path: modelName + ">/",
+                      template: new sap.ui.core.ListItem({
+                          key: "{" + modelName + ">" + keyCol + "}",
+                          text: "{" + modelName + ">" + keyCol + "}",
+                          additionalText: "{" + modelName + ">" + textCol + "}"
+                      })
+                  });
+              } catch (e) {
+                  console.error("Erro carregando dropdown parametro", e);
+              }
+              vb.addItem(cb);
+          } else {
+              vb.addItem(new Input({ 
+                  value: "{Config>/Parametro}",
+                  placeholder: "Digite o parâmetro da busca...",
+                  submit: this.onBuscarProcedure.bind(this)
+              }));
+          }
       },
 
       _geraCamposDinamicos: async function(prn, procData) {

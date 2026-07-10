@@ -262,6 +262,10 @@ sap.ui.define(
         let match;
         const prnTags = [];
         
+        if (tipoObj.procedure) {
+            prnTags.push("@PARAMETRO@");
+        }
+        
         while ((match = regex.exec(prn)) !== null) {
           const tag = match[1];
           if (!prnTags.includes(tag)) {
