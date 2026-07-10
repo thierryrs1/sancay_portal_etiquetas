@@ -35,6 +35,8 @@ routes.post('/etiqueta/getImpressorasVolume', etiquetaController.getImpressorasV
 routes.post('/etiqueta/getLogImpressao', etiquetaController.getLogImpressao);
 routes.get('/etiqueta/getFiltrosLogImpressao', etiquetaController.getFiltrosLogImpressao);
 routes.post('/etiqueta/validaEtiqueta', etiquetaController.validaEtiqueta);
+routes.post('/etiqueta/executaProcedureManual', etiquetaController.executaProcedureManual);
+routes.post('/etiqueta/executaQueryDinamica', etiquetaController.executaQueryDinamica);
 
 routes.post("/etiqueta/imprimeEtq", printController.imprimeEtq);
 routes.post("/etiqueta/imprimeVolumes", printController.imprimeVolumes);
@@ -55,5 +57,7 @@ routes.get("/configuraImpressao/getTipoImps", configuraImpressaoController.getTi
 routes.post("/configuraImpressao/setConfigImpressao", configuraImpressaoController.setConfigImpressao);
 routes.get("/configuraImpressao/getRegraFn", configuraImpressaoController.getRegraFn);
 routes.post("/configuraImpressao/gravaRegraFn", configuraImpressaoController.gravaRegraFn);
+routes.post("/configuraImpressao/getTags", configuraImpressaoController.getTags);
+routes.post("/configuraImpressao/saveTags", configuraImpressaoController.saveTags);
 
 module.exports = routes;

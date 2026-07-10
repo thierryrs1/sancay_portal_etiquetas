@@ -11,15 +11,19 @@ sap.ui.define(
         if (!perms.Configura_Impressao) {
           this.navTo("home");
         }
-        this.setModel(new JSONModel(), "Data");
-        this.setModel(new JSONModel(), "Impressoras");
-        this.setModel(new JSONModel(), "TipoEtq");
-        this.setModel(new JSONModel(), "TipoImp");
-        this.setModel(new JSONModel(), "Procedures");
+        const data = {
+          procs: [],
+          tiposEtq: [],
+          tipoImps: [],
+        };
+        this.setModel(new sap.ui.model.json.JSONModel(data), "Data");
         this.setModelProperty("Data", "CompanyName", sessionStorage.getItem("companyName"));
-
+        this.setModel(new sap.ui.model.json.JSONModel({ list: [] }), "TipoEtq");
+        this.setModel(new sap.ui.model.json.JSONModel({ list: [] }), "TipoImp");
+        this.setModel(new sap.ui.model.json.JSONModel({ list: [] }), "Impressoras");
+        this.setModel(new sap.ui.model.json.JSONModel({ list: [] }), "Procedures");
+        this.setModel(new sap.ui.model.json.JSONModel({ list: [], TipoEtqSelecionado: "" }), "ConfigTags");
         this.carregaDados();
-        
       },
 
       onOpenPrnModal: function (oEvent) {
@@ -237,5 +241,77 @@ sap.ui.define(
           this.showExceptionMessageBox("Erro", "onGravarSpPressed", err);
         }
       },
+
+      async onConfigurarTags() {
+        const idx = this.byId("tblTipoEtq").getSelectedIndex();
+        if (idx < 0) {
+          this.showErrorMessageBox("Atenção", "Selecione um Tipo de Etiqueta na tabela primeiro.");
+          return;
+        }
+        
+        const tipoObj = this.getModel("TipoEtq").getProperty("/list/" + idx);
+        if (!tipoObj || !tipoObj.tipoEtq) {
+          return;
+        }
+        if (tipoObj.isManual !== 'Y') {
+          this.showErrorMessageBox("Atenção", "Esta configuração só é útil para etiquetas manuais.");
+        }
+        
+        const prn = tipoObj.pathPrn || "";
+        const regex = /<([^>]+)>/g;
+        let match;
+        const prnTags = [];
+        
+        while ((match = regex.exec(prn)) !== null) {
+          const tag = match[1];
+          if (!prnTags.includes(tag)) {
+            prnTags.push(tag);
+          }
+        }
+        
+        sap.ui.core.BusyIndicator.show();
+        try {
+          const bdTags = await this.serverService.post("/configuraImpressao/getTags", { tipoEtq: tipoObj.tipoEtq });
+          
+          const list = prnTags.map(t => {
+            const found = bdTags.find(b => b.tag === t);
+            return {
+              tag: t,
+              consulta: found ? found.consulta : ""
+            };
+          });
+          
+          this.getModel("ConfigTags").setProperty("/TipoEtqSelecionado", tipoObj.tipoEtq);
+          this.getModel("ConfigTags").setProperty("/list", list);
+          
+          this.byId("tagsDialog").open();
+        } catch (e) {
+          this.showExceptionMessageBox("Erro", "Erro ao carregar tags do banco.", e);
+        }
+        sap.ui.core.BusyIndicator.hide();
+      },
+
+      onCloseTagsDialog() {
+        this.byId("tagsDialog").close();
+      },
+
+      async onSaveTags() {
+        const tipoEtq = this.getModel("ConfigTags").getProperty("/TipoEtqSelecionado");
+        const list = this.getModel("ConfigTags").getProperty("/list");
+        
+        sap.ui.core.BusyIndicator.show();
+        try {
+          await this.serverService.post("/configuraImpressao/saveTags", {
+            tipoEtq: tipoEtq,
+            tags: list
+          });
+          this.showSuccessMessageBox("Sucesso", "Configurações salvas.");
+          this.byId("tagsDialog").close();
+        } catch (e) {
+          this.showExceptionMessageBox("Erro", "Erro ao salvar.", e);
+        }
+        sap.ui.core.BusyIndicator.hide();
+      },
+
     })
 );

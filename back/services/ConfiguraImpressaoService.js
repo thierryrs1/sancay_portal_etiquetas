@@ -201,6 +201,30 @@ class ConfiguraImpressaoService {
     await DirectDb.executeQuery(sp);
   }
 
+  async getTags(tipoEtq) {
+    try {
+      if (!tipoEtq) return [];
+      const res = await DirectDb.executeQuery(`SELECT "tag", "consulta" FROM "SPS_TIPO_ETQ_TAGS" WHERE "tipoEtq" = ?`, [tipoEtq]);
+      return res || [];
+    } catch (ex) {
+      logError("Erro getTags: " + ex.message);
+      return [];
+    }
+  }
+
+  async saveTags(tipoEtq, tags) {
+    try {
+      await DirectDb.executeQuery(`DELETE FROM "SPS_TIPO_ETQ_TAGS" WHERE "tipoEtq" = ?`, [tipoEtq]);
+      for (const t of tags) {
+        if (!t.tag) continue;
+        const q = t.consulta ? t.consulta.replace(/'/g, "''") : "";
+        await DirectDb.executeQuery(`INSERT INTO "SPS_TIPO_ETQ_TAGS" ("tipoEtq", "tag", "consulta") VALUES ('${tipoEtq}', '${t.tag}', '${q}')`);
+      }
+    } catch (ex) {
+      throw new Error(`Erro salvando tags: ` + errors.getError(ex));
+    }
+  }
+
 }
 
 module.exports = new ConfiguraImpressaoService();

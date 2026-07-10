@@ -98,6 +98,26 @@ class EtiquetaController {
     }
   }
 
+  async executaProcedureManual(req, res) {
+    try {
+      const { procedure, parametro } = req.body;
+      const result = await etiquetaService.executaProcedureManual(procedure, parametro);
+      res.send(result);
+    } catch (err) {
+      sendError(res, err);
+    }
+  }
+
+  async executaQueryDinamica(req, res) {
+    try {
+      const { query } = req.body;
+      const result = await etiquetaService.executaQueryDinamica(query);
+      res.send(result);
+    } catch (err) {
+      sendError(res, err);
+    }
+  }
+
 }
 
 module.exports = new EtiquetaController();

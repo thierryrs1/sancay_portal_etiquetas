@@ -139,6 +139,26 @@ class EtiquetaService {
     }
   }
 
+  async executaProcedureManual(procedureName, parametro) {
+    try {
+      if (!procedureName) throw new Error("Procedure não informada");
+      const res = await DirectDb.executeProcedure(procedureName, [parametro || ""]);
+      return res && res.length > 0 ? res[0] : {};
+    } catch (ex) {
+      throw new Error(`Erro ao executar procedure ${procedureName}: ` + errors.getError(ex));
+    }
+  }
+
+  async executaQueryDinamica(query) {
+    try {
+      if (!query) throw new Error("Query não informada");
+      const res = await DirectDb.executeQuery(query);
+      return res || [];
+    } catch (ex) {
+      throw new Error(`Erro ao executar query dinâmica: ` + errors.getError(ex));
+    }
+  }
+
 }
 
 module.exports = new EtiquetaService();

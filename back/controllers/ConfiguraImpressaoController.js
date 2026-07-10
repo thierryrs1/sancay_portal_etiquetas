@@ -60,8 +60,29 @@ class ConfiguraImpressaoController {
 
   async gravaRegraFn(req, res) {
     try {
-      await configuraImpressaoService.gravaRegraFn(req.body);
-      res.status(204).send();
+      const { jsCode } = req.body;
+      await configuraImpressaoService.gravaRegraFn(jsCode);
+      res.send("");
+    } catch (err) {
+      sendError(res, err);
+    }
+  }
+
+  async getTags(req, res) {
+    try {
+      const { tipoEtq } = req.body;
+      const ret = await configuraImpressaoService.getTags(tipoEtq);
+      res.send(ret);
+    } catch (err) {
+      sendError(res, err);
+    }
+  }
+
+  async saveTags(req, res) {
+    try {
+      const { tipoEtq, tags } = req.body;
+      await configuraImpressaoService.saveTags(tipoEtq, tags);
+      res.send("");
     } catch (err) {
       sendError(res, err);
     }

@@ -38,11 +38,18 @@
           visibleRowCount="12"
           width="100%"
           rowHeight="48">
+          <t:layoutData>
+            <FlexItemData growFactor="6" />
+          </t:layoutData>
           <t:extension>
-            <Title text="Tipos Etiquetas" class="sapUiTinyMarginTop"/>
+            <OverflowToolbar>
+              <Title text="Tipos Etiquetas" />
+              <ToolbarSpacer />
+              <Button icon="sap-icon://list" text="Configurar Dropdowns" press="onConfigurarTags" enabled="{= ${TipoEtq>/list}.length > 0 }" />
+            </OverflowToolbar>
           </t:extension>
         <t:columns>
-          <t:Column width="25%">
+          <t:Column width="11rem">
             <Label
                 text="Tipo"
                 textAlign="Left"
@@ -60,7 +67,7 @@
               </HBox>
             </t:template>
           </t:Column>
-          <t:Column width="20%">
+          <t:Column width="11rem">
             <Link
                 text="Ícone (ver lista)"
                 href="https://ui5.sap.com/test-resources/sap/m/demokit/iconExplorer/webapp/index.html#"
@@ -74,7 +81,7 @@
                   placeholder="ex: sap-icon://print" />
             </t:template>
           </t:Column>
-          <t:Column width="10%">
+          <t:Column width="5rem">
             <Label text="Manual?" />
             <t:template>
               <CheckBox
@@ -83,7 +90,7 @@
                   visible="{= ${TipoEtq>tipoEtq}!==null}" />
             </t:template>
           </t:Column>
-          <t:Column width="35%">
+          <t:Column width="5rem">
             <Label
                 text="PRN"
                 textAlign="Left"
@@ -94,16 +101,11 @@
                     icon="sap-icon://edit"
                     type="Transparent"
                     visible="{= ${TipoEtq>tipoEtq}!==null}"
-                    press="onOpenPrnModal"
-                    class="sapUiTinyMarginEnd" />
-                <Text
-                    visible="{= ${TipoEtq>tipoEtq}!==null}"
-                    text="{TipoEtq>pathPrn}" 
-                    maxLines="1" />
+                    press="onOpenPrnModal" />
               </HBox>
             </t:template>
           </t:Column>
-          <t:Column width="35%">
+          <t:Column width="16rem">
             <Label
                 text="Procedure"
                 textAlign="Left"
@@ -124,7 +126,7 @@
               </Select>
             </t:template>
           </t:Column>
-          <t:Column width="4em">
+          <t:Column width="3rem">
             <t:template>
               <Button
                   icon="sap-icon://delete"
@@ -143,7 +145,10 @@
           visibleRowCount="12"
           width="100%"
           rowHeight="48">
-          <t:extension>
+        <t:layoutData>
+          <FlexItemData growFactor="4" />
+        </t:layoutData>
+        <t:extension>
             <Title text="Tipo x Impressoras" class="sapUiTinyMarginTop"/>
           </t:extension>
         <t:columns>
@@ -196,7 +201,7 @@
                   visible="{= ${TipoImp>tipoEtq}!==null}" />
             </t:template>
           </t:Column>
-          <t:Column width="4em">
+          <t:Column width="3rem">
             <t:template>
               <Button
                   icon="sap-icon://delete"
@@ -238,6 +243,39 @@
         <beginButton>
           <Button text="Concluir" type="Emphasized" press="onClosePrnModal" />
         </beginButton>
+      </Dialog>
+      
+      <Dialog id="tagsDialog" title="Configurar Dropdowns: {ConfigTags>/TipoEtqSelecionado}" stretch="true" contentWidth="800px" contentHeight="600px" verticalScrolling="true" resizable="true" draggable="true">
+        <content>
+          <t:Table
+              rows="{ConfigTags>/list}"
+              selectionMode="None"
+              alternateRowColors="true"
+              visibleRowCount="10"
+              width="100%"
+              rowHeight="48">
+            <t:columns>
+              <t:Column width="15rem">
+                <Label text="Tag (Variável do PRN)" />
+                <t:template>
+                  <Text text="{ConfigTags>tag}" />
+                </t:template>
+              </t:Column>
+              <t:Column>
+                <Label text="Consulta SQL (Retornar colunas 'Key' e 'Text')" />
+                <t:template>
+                  <Input value="{ConfigTags>consulta}" placeholder="Ex: SELECT id AS &quot;Key&quot;, nome AS &quot;Text&quot; FROM MINHA_TAB" />
+                </t:template>
+              </t:Column>
+            </t:columns>
+          </t:Table>
+        </content>
+        <beginButton>
+          <Button text="Salvar" type="Accept" press="onSaveTags" />
+        </beginButton>
+        <endButton>
+          <Button text="Cancelar" type="Reject" press="onCloseTagsDialog" />
+        </endButton>
       </Dialog>
     </dependents>
   </Page>

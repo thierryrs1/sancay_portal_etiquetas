@@ -15,7 +15,9 @@ sap.ui.define([
               Tipos: [],
               Impressoras: [],
               Fields: [],
-              Values: {}
+              Values: {},
+              HasProcedure: false,
+              Parametro: ""
           }), "Config");
       },
 
@@ -30,7 +32,15 @@ sap.ui.define([
               if (tipos.length > 0) {
                   this.byId("selTipoEtq").setSelectedKey(tipos[0].tipoEtq);
                   await this._carregaImpressoras(tipos[0].tipoEtq);
-                  this._geraCamposDinamicos(tipos[0].pathPrn);
+                  
+                  if (tipos[0].procedure) {
+                      this.getModel("Config").setProperty("/HasProcedure", true);
+                      this.getModel("Config").setProperty("/Fields", []);
+                      this.byId("formFields").removeAllContent();
+                  } else {
+                      this.getModel("Config").setProperty("/HasProcedure", false);
+                      await this._geraCamposDinamicos(tipos[0].pathPrn);
+                  }
               } else {
                   this.getModel("Config").setProperty("/Fields", []);
                   this.byId("formFields").removeAllContent();
@@ -47,8 +57,16 @@ sap.ui.define([
           const tipoObj = tipos.find(t => t.tipoEtq === tipoSel);
           
           if (tipoObj) {
+              this.getModel("Config").setProperty("/Parametro", "");
               await this._carregaImpressoras(tipoSel);
-              this._geraCamposDinamicos(tipoObj.pathPrn);
+              if (tipoObj.procedure) {
+                  this.getModel("Config").setProperty("/HasProcedure", true);
+                  this.getModel("Config").setProperty("/Fields", []);
+                  this.byId("formFields").removeAllContent();
+              } else {
+                  this.getModel("Config").setProperty("/HasProcedure", false);
+                  await this._geraCamposDinamicos(tipoObj.pathPrn);
+              }
           }
       },
 
@@ -63,9 +81,19 @@ sap.ui.define([
           } catch(e) {}
       },
 
-      _geraCamposDinamicos: function(prn) {
+      _geraCamposDinamicos: async function(prn, procData) {
           const form = this.byId("formFields");
           form.removeAllContent();
+          
+          const tipoSel = this.byId("selTipoEtq").getSelectedKey();
+          let bdTags = [];
+          try {
+              if (tipoSel) {
+                  bdTags = await this.serverService.post("/configuraImpressao/getTags", { tipoEtq: tipoSel });
+              }
+          } catch (e) {
+              console.error("Erro carregando tags", e);
+          }
           
           // Regex para encontrar <tags>
           const regex = /<([^>]+)>/g;
@@ -82,14 +110,90 @@ sap.ui.define([
           }
           
           this.getModel("Config").setProperty("/Fields", fields);
-          this.getModel("Config").setProperty("/Values", values);
           
-          fields.forEach(f => {
+          for (let i = 0; i < fields.length; i++) {
+              const f = fields[i];
+              let isReadOnly = false;
+              if (procData) {
+                  const key = Object.keys(procData).find(k => k.toUpperCase() === f.toUpperCase());
+                  if (key && procData[key] !== null && procData[key] !== "") {
+                      values[f] = procData[key];
+                      isReadOnly = true;
+                  }
+              }
+              
               form.addContent(new Label({ text: f }));
-              form.addContent(new Input({ 
-                  value: "{Config>/Values/" + f + "}" 
-              }));
-          });
+              
+              const tagConfig = bdTags.find(b => b.tag === f);
+              if (!isReadOnly && tagConfig && tagConfig.consulta) {
+                  // É um dropdown
+                  const cb = new sap.m.ComboBox({
+                      selectedKey: "{Config>/Values/" + f + "}",
+                      width: "100%",
+                      showSecondaryValues: true,
+                      filterSecondaryValues: true
+                  });
+                  try {
+                      const items = await this.serverService.post("/etiqueta/executaQueryDinamica", { query: tagConfig.consulta });
+                      const modelName = "Dropdown_" + f;
+                      this.setModel(new sap.ui.model.json.JSONModel(items), modelName);
+                      
+                      let keyCol = "Key";
+                      let textCol = "Text";
+                      if (items && items.length > 0) {
+                          const cols = Object.keys(items[0]);
+                          if (cols.length > 0) keyCol = cols[0];
+                          if (cols.length > 1) textCol = cols[1];
+                          else textCol = keyCol;
+                      }
+                      
+                      cb.bindItems({
+                          path: modelName + ">/",
+                          template: new sap.ui.core.ListItem({
+                              key: "{" + modelName + ">" + keyCol + "}",
+                              text: "{" + modelName + ">" + keyCol + "}",
+                              additionalText: "{" + modelName + ">" + textCol + "}"
+                          })
+                      });
+                  } catch (e) {
+                      console.error("Erro carregando dropdown " + f, e);
+                  }
+                  form.addContent(cb);
+              } else {
+                  form.addContent(new Input({ 
+                      value: "{Config>/Values/" + f + "}",
+                      editable: !isReadOnly
+                  }));
+              }
+          }
+          
+          this.getModel("Config").setProperty("/Values", values);
+      },
+
+      onBuscarProcedure: async function() {
+          const parametro = this.getModel("Config").getProperty("/Parametro");
+          const tipoSel = this.byId("selTipoEtq").getSelectedKey();
+          const tipos = this.getModel("Config").getProperty("/Tipos");
+          const tipoObj = tipos.find(t => t.tipoEtq === tipoSel);
+          
+          if (!parametro) {
+              this.showErrorMessageBox("Atenção", "Preencha o parâmetro de busca.");
+              return;
+          }
+          
+          this.getView().setBusy(true);
+          try {
+              const result = await this.serverService.post("/etiqueta/executaProcedureManual", {
+                  procedure: tipoObj.procedure,
+                  parametro: parametro
+              });
+              
+              await this._geraCamposDinamicos(tipoObj.pathPrn, result);
+              this.showSuccessMessageBox("Sucesso", "Dados carregados.");
+          } catch(e) {
+              this.showExceptionMessageBox("Erro", "Erro ao buscar dados", e);
+          }
+          this.getView().setBusy(false);
       },
 
       onPrint: async function(visualizar) {

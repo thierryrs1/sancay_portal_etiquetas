@@ -28,6 +28,21 @@
                             items="{ path: 'Config>/Impressoras' }">
                             <core:Item key="{Config>impressora}" text="{Config>impressora}" />
                         </Select>
+
+                        <Label text="Parâmetro" visible="{Config>/HasProcedure}" />
+                        <Input 
+                            value="{Config>/Parametro}" 
+                            visible="{Config>/HasProcedure}" 
+                            placeholder="Digite o parâmetro da busca..."
+                            submit="onBuscarProcedure" />
+                        <Label visible="{Config>/HasProcedure}" />
+                        <Button 
+                            text="Buscar Dados" 
+                            type="Emphasized" 
+                            icon="sap-icon://search" 
+                            press="onBuscarProcedure" 
+                            visible="{Config>/HasProcedure}" 
+                            width="200px" />
                     </f:content>
                 </f:SimpleForm>
             </Panel>
