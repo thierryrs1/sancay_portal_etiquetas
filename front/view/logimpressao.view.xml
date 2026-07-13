@@ -137,7 +137,7 @@
           </t:template>
         </t:Column>
         <t:Column width="10rem" sortProperty="TipoEtiqueta" filterProperty="TipoEtiqueta">
-          <Label text="Tipo de Etq" />
+          <Label text="Tipo de Etiqueta" />
           <t:template>
             <ObjectStatus
                 text="{Data>TipoEtiqueta}"
