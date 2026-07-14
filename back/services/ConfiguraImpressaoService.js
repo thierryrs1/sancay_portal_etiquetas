@@ -102,12 +102,13 @@ class ConfiguraImpressaoService {
         }
         const tipoEtq = t.tipoEtq.replace(/'/g, "''");
         tipos.push(tipoEtq);
-        const pathPrn = t.pathPrn.replace(/'/g, "''");
+        const pathPrn = t.pathPrn ? t.pathPrn.replace(/'/g, "''") : "";
+        const procedure = t.procedure ? t.procedure.replace(/'/g, "''") : "";
         const icon = t.icon ? t.icon.replace(/'/g, "''") : "";
         const isManual = t.isManual === "Y" || t.isManual === true ? "Y" : "N";
         query += `
         INSERT INTO SPS_TIPO_ETQ ("tipoEtq", "pathPrn", "procedure", "icon", "isManual")
-        VALUES ('${tipoEtq}', '${pathPrn}', '${t.procedure}', '${icon}', '${isManual}');
+        VALUES ('${tipoEtq}', '${pathPrn}', '${procedure}', '${icon}', '${isManual}');
         `;
       }
       for (let i = 0; i < tipoImps.length; i++) {

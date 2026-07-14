@@ -8,6 +8,7 @@ const etiquetaController = require('./back/controllers/EtiquetaController');
 const permissoesController = require('./back/controllers/PermissoesController');
 const configuraImpressaoController = require("./back/controllers/ConfiguraImpressaoController");
 const configSpsController = require("./back/controllers/ConfigSpsController");
+const apiController = require('./back/controllers/ApiController');
 
 routes.get('/', (req, res) => {
   res.sendFile(path.join(`${__dirname}/front/index.html`))
@@ -18,6 +19,7 @@ routes.post("/configSps/checkConfigLogin", configSpsController.checkConfigLogin)
 routes.get("/configSps/getWebConf", configSpsController.getWebConf);
 routes.post("/configSps/gravaEnv", configSpsController.gravaEnv);
 
+routes.post('/api/imprimirEtiqueta', apiController.apiImprimir);
 
 routes.post('/Login', loginController.login);
 routes.get('/getCompanyName', authMiddleware, loginController.getCompanyName);
@@ -27,7 +29,7 @@ routes.use('/etiqueta', authMiddleware);
 
 routes.get('/etiqueta/getTiposEtiquetaVolume', etiquetaController.getTiposEtiquetaVolume);
 routes.get('/etiqueta/getTiposEtiquetaManual', etiquetaController.getTiposEtiquetaManual);
-routes.get('/etiqueta/getFornecedoresVolume', etiquetaController.getFornecedoresVolume);																	  
+routes.get('/etiqueta/getFornecedoresVolume', etiquetaController.getFornecedoresVolume);
 routes.get('/etiqueta/getEstufas', etiquetaController.getEstufas);
 routes.get('/etiqueta/getOrdensProducao', etiquetaController.getOrdensProducao);
 routes.post('/etiqueta/getListaImpressoesVolume', etiquetaController.getListaImpressoesVolume);

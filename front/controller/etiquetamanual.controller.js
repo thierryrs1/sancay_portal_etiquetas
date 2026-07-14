@@ -33,7 +33,7 @@ sap.ui.define([
                   this.byId("selTipoEtq").setSelectedKey(tipos[0].tipoEtq);
                   await this._carregaImpressoras(tipos[0].tipoEtq);
                   
-                  if (tipos[0].procedure) {
+                  if (tipos[0].procedure && String(tipos[0].procedure).trim() !== "" && String(tipos[0].procedure).toLowerCase() !== "null" && String(tipos[0].procedure).toLowerCase() !== "undefined") {
                       this.getModel("Config").setProperty("/HasProcedure", true);
                       this.getModel("Config").setProperty("/Fields", []);
                       this.byId("formFields").removeAllContent();
@@ -60,7 +60,7 @@ sap.ui.define([
           if (tipoObj) {
               this.getModel("Config").setProperty("/Parametro", "");
               await this._carregaImpressoras(tipoSel);
-              if (tipoObj.procedure) {
+              if (tipoObj.procedure && String(tipoObj.procedure).trim() !== "" && String(tipoObj.procedure).toLowerCase() !== "null" && String(tipoObj.procedure).toLowerCase() !== "undefined") {
                   this.getModel("Config").setProperty("/HasProcedure", true);
                   this.getModel("Config").setProperty("/Fields", []);
                   this.byId("formFields").removeAllContent();
