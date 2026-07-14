@@ -63,5 +63,5 @@ dist/
 .env
 daemon/
 node.exe
-resources/pdf
+back/resources/pdf
 Instalador

@@ -67,18 +67,20 @@
               </HBox>
             </t:template>
           </t:Column>
-          <t:Column width="11rem">
+          <t:Column width="5rem">
             <Link
-                text="Ícone (ver lista)"
+                text="Ícone"
                 href="https://ui5.sap.com/test-resources/sap/m/demokit/iconExplorer/webapp/index.html#"
                 target="_blank"
                 width="100%" />
             <t:template>
-              <Input
-                  width="100%"
-                  visible="{= ${TipoEtq>tipoEtq}!==null}"
-                  value="{TipoEtq>icon}"
-                  placeholder="ex: sap-icon://print" />
+              <HBox alignContent="Center" alignItems="Center">
+                <Button
+                    icon="{= ${TipoEtq>icon} ? ${TipoEtq>icon} : 'sap-icon://image-viewer' }"
+                    type="Transparent"
+                    visible="{= ${TipoEtq>tipoEtq}!==null}"
+                    press="onOpenIconModal" />
+              </HBox>
             </t:template>
           </t:Column>
           <t:Column width="5rem">
@@ -87,6 +89,15 @@
               <CheckBox
                   selected="{= ${TipoEtq>isManual} === 'Y' }"
                   select="onManualSelect"
+                  visible="{= ${TipoEtq>tipoEtq}!==null}" />
+            </t:template>
+          </t:Column>
+          <t:Column width="6rem">
+            <Label text="Volume?" />
+            <t:template>
+              <CheckBox
+                  selected="{= ${TipoEtq>controlaVolume} === 'Y' }"
+                  select="onControlaVolumeSelect"
                   visible="{= ${TipoEtq>tipoEtq}!==null}" />
             </t:template>
           </t:Column>
@@ -231,6 +242,28 @@
       </OverflowToolbar>
     </footer>
     <dependents>
+      <Dialog id="iconDialog" title="Código do Ícone" contentWidth="400px" verticalScrolling="false" resizable="false" draggable="true">
+        <content>
+          <HBox class="sapUiSmallMargin" alignItems="Center" width="auto">
+            <core:Icon 
+                src="{= ${TipoEtq>icon} ? ${TipoEtq>icon} : 'sap-icon://image-viewer' }" 
+                size="2rem" 
+                class="sapUiMediumMarginEnd" />
+            <Input 
+                value="{TipoEtq>icon}" 
+                width="100%" 
+                placeholder="ex: sap-icon://print">
+              <layoutData>
+                <FlexItemData growFactor="1" />
+              </layoutData>
+            </Input>
+          </HBox>
+        </content>
+        <beginButton>
+          <Button text="Concluir" type="Emphasized" press="onCloseIconModal" />
+        </beginButton>
+      </Dialog>
+      
       <Dialog id="prnDialog" title="Código PRN" stretch="true" contentWidth="800px" contentHeight="600px" verticalScrolling="true" resizable="true" draggable="true">
         <content>
           <TextArea 

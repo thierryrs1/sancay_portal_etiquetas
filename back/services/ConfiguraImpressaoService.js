@@ -55,7 +55,8 @@ class ConfiguraImpressaoService {
         "icon",
         "isManual",
         "pathPrn",
-        "procedure"
+        "procedure",
+        "controlaVolume"
         FROM SPS_TIPO_ETQ
         ORDER BY "tipoEtq";
       `;
@@ -106,9 +107,10 @@ class ConfiguraImpressaoService {
         const procedure = t.procedure ? t.procedure.replace(/'/g, "''") : "";
         const icon = t.icon ? t.icon.replace(/'/g, "''") : "";
         const isManual = t.isManual === "Y" || t.isManual === true ? "Y" : "N";
+        const controlaVolume = t.controlaVolume === "Y" || t.controlaVolume === true ? "Y" : "N";
         query += `
-        INSERT INTO SPS_TIPO_ETQ ("tipoEtq", "pathPrn", "procedure", "icon", "isManual")
-        VALUES ('${tipoEtq}', '${pathPrn}', '${procedure}', '${icon}', '${isManual}');
+        INSERT INTO SPS_TIPO_ETQ ("tipoEtq", "pathPrn", "procedure", "icon", "isManual", "controlaVolume")
+        VALUES ('${tipoEtq}', '${pathPrn}', '${procedure}', '${icon}', '${isManual}', '${controlaVolume}');
         `;
       }
       for (let i = 0; i < tipoImps.length; i++) {

@@ -23,7 +23,11 @@ class PrintService {
        const parsedData = jsonDataList && jsonDataList.length > 0 ? jsonDataList[0] : {};
        let prnFinal = this.populaPrn(template, parsedData);
        if (copias > 1) {
-         prnFinal = prnFinal.replace(/\^PQ\d+,?/g, `^PQ${copias},`);
+         if (prnFinal.includes('^PQ')) {
+           prnFinal = prnFinal.replace(/\^PQ\d+[,0-9A-Z]*/g, `^PQ${copias},0,1,Y`);
+         } else {
+           prnFinal = prnFinal.replace(/\^XZ/i, `^PQ${copias},0,1,Y\n^XZ`);
+         }
        }
        
        let pdf = await this.imprimeManual(impressora, tipo, prnFinal, visualizar, username, parsedData, logIdOrigem, motivoReimpressao);
@@ -107,6 +111,7 @@ class PrintService {
     if (visualizar) {
       pdf = await this.visualizarEtiqueta(prnFinal);
     } else {
+      require("fs").writeFileSync("debug_ultima_impressao.prn", prnFinal);
       let prnEncode = iconv.encode(prnFinal, "latin1");
       this.sendToPrinter(impressora, prnEncode);
       try {
@@ -232,7 +237,11 @@ class PrintService {
       }
       let prn = this.populaPrn(template, dados);
       if (copias > 1) {
-        prn = prn.replace(/\^PQ\d+,?/g, `^PQ${copias},`);
+        if (prn.includes('^PQ')) {
+          prn = prn.replace(/\^PQ\d+[,0-9A-Z]*/g, `^PQ${copias},0,1,Y`);
+        } else {
+          prn = prn.replace(/\^XZ/i, `^PQ${copias},0,1,Y\n^XZ`);
+        }
       }
       logDebug(prn);
       if (visualizar){
@@ -240,6 +249,7 @@ class PrintService {
         return pdf;
       }
       else {
+        require("fs").writeFileSync("debug_ultima_impressao.prn", prn);
         prn = iconv.encode(prn, "latin1");
         this.sendToPrinter(impressora, prn);
       }

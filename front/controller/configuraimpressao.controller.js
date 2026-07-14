@@ -43,6 +43,23 @@ sap.ui.define(
         }
       },
 
+      onOpenIconModal: function (oEvent) {
+        const oSource = oEvent.getSource();
+        const oContext = oSource.getBindingContext("TipoEtq");
+        
+        if (!this._oIconDialog) {
+          this._oIconDialog = this.getView().byId("iconDialog");
+        }
+        this._oIconDialog.setBindingContext(oContext, "TipoEtq");
+        this._oIconDialog.open();
+      },
+
+      onCloseIconModal: function () {
+        if (this._oIconDialog) {
+          this._oIconDialog.close();
+        }
+      },
+
       carregaDados() {
         this.carregaImpressoras();
         this.carregaProcedures();
@@ -158,6 +175,12 @@ sap.ui.define(
         const selected = oEvent.getParameter("selected");
         const path = oEvent.getSource().getBindingContext("TipoEtq").getPath();
         this.getModel("TipoEtq").setProperty(path + "/isManual", selected ? "Y" : "N");
+      },
+
+      onControlaVolumeSelect: function(oEvent) {
+        const selected = oEvent.getParameter("selected");
+        const path = oEvent.getSource().getBindingContext("TipoEtq").getPath();
+        this.getModel("TipoEtq").setProperty(path + "/controlaVolume", selected ? "Y" : "N");
       },
 
       addTipoImp() {

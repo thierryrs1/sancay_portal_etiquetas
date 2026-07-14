@@ -35,6 +35,13 @@ httpsServer.listen(port, async () => {
     await DirectDb.executeQuery(`SELECT TOP 1 "ItemCode" FROM {db}.OITM`);
     log(`DB Conectado`);
 
+    try {
+      await DirectDb.executeQuery(`ALTER TABLE SPS_TIPO_ETQ ADD ("controlaVolume" VARCHAR(1) DEFAULT 'N')`);
+      log(`Coluna controlaVolume criada com sucesso!`);
+    } catch(e) {
+      // Ignora erro se a coluna já existir
+    }
+
     const FilaBackgroundService = require('./back/services/FilaBackgroundService');
     FilaBackgroundService.start();
 

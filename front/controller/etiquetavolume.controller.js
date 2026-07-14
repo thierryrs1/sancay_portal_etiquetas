@@ -97,13 +97,21 @@ sap.ui.define(
           impressoras.splice(0, 0, { Impressora: "" });
           this.setModelProperty("Impressoras", "Items", impressoras);
           
-          if (impressoras.length == 2) {
+          const currentPrinter = this.getModelProperty("Data", "Impressora");
+
+          if (currentPrinter && impressoras.find(p => p.Impressora === currentPrinter)) {
+            // Maintain the currently selected printer
+          } else if (impressoras.length == 2) {
             this.setModelProperty("Data", "Impressora", impressoras[1].Impressora);
           } else if (impressoras.length > 2) {
             const df = impressoras.find((p) => p.default == "Y");
             if (df) {
               this.setModelProperty("Data", "Impressora", df.Impressora);
+            } else {
+              this.setModelProperty("Data", "Impressora", "");
             }
+          } else {
+            this.setModelProperty("Data", "Impressora", "");
           }
         } catch (err) {
           this.showExceptionMessageBox("Erro", "getImpressorasVolume", err);
@@ -164,6 +172,10 @@ sap.ui.define(
           const cols = Object.keys(list[0]);
 
           // cria model limpando nomes das props
+          const tipos = this.getModelProperty("TiposEtiqueta", "Items");
+          const selectedTipo = tipos.find(t => t.tipoEtq === data.tipoEtq);
+          const permiteCopias = selectedTipo && selectedTipo.controlaVolume === 'N';
+
           const modelList = [];
           list.map((line) => {
             const newLine = {};
@@ -171,6 +183,9 @@ sap.ui.define(
               const propName = col.replace(/ _\(.+$/, "");
               newLine[propName] = line[col];
             });
+            if (permiteCopias) {
+              newLine["CopiasDesejadas"] = 1;
+            }
             modelList.push(newLine);
           });
 
@@ -252,6 +267,21 @@ sap.ui.define(
             tblList.addColumn(column);
           }
 
+          if (permiteCopias) {
+            const copiasColumn = new sap.ui.table.Column({
+              label: new sap.m.Label({ text: "Cópias" }),
+              hAlign: "Center",
+              width: "8rem",
+              template: new sap.m.StepInput({
+                 value: "{Data>CopiasDesejadas}",
+                 min: 1,
+                 max: 999,
+                 textAlign: "Center"
+              })
+            });
+            tblList.addColumn(copiasColumn);
+          }
+
         } catch (ex) {
           this.showExceptionMessageBox(
             "Erro",
@@ -307,39 +337,70 @@ sap.ui.define(
           return;
         }
 
+        const tipos = this.getModelProperty("TiposEtiqueta", "Items");
+        const selectedTipo = tipos.find(t => t.tipoEtq === data.tipoEtq);
+        const permiteCopias = selectedTipo && selectedTipo.controlaVolume === 'N';
+
         const confVolumesLineKey = [];
         const jsonDataList = [];
         const tipo = [];
         let numVol = '';
         const model = this.getModel("Data");
-        for (let i = 0; i < selectedIndices.length; i++) {
-          const path = tblList.getContextByIndex(selectedIndices[i]).getPath();
-          const item = model.getProperty(path);
-          if (i==0)
-            numVol = item.VOL;
-          
-          let key = item.confVolumesLineKey;
-          if (data.Idioma) {
-            key += `@${data.Idioma}@`;
-          } else {
-            key += `@PTB@`;
-          }
-          confVolumesLineKey.push(key);
-          jsonDataList.push(item);
-          
-          if (tipo.length === 0) { tipo.push(item.tipoEtq) };
-        }
+        
         try {
-          const tipoFinal = tipo[0] || data.tipoEtq;
-          if ( data.VisualizaVol == true) {
-            await this.serverService.post("/etiqueta/imprimeVolumes", { impressora: data.Impressora, tipo: tipoFinal, confVolumesLineKeys: confVolumesLineKey.join(","), visualizar:false, numVolume: numVol, jsonDataList});
+          if (permiteCopias) {
+            sap.ui.core.BusyIndicator.show();
+            for (let i = 0; i < selectedIndices.length; i++) {
+              const path = tblList.getContextByIndex(selectedIndices[i]).getPath();
+              const item = model.getProperty(path);
+              
+              let key = item.confVolumesLineKey;
+              if (data.Idioma) {
+                key += `@${data.Idioma}@`;
+              } else {
+                key += `@PTB@`;
+              }
+              const copias = parseInt(item.CopiasDesejadas, 10) || 1;
+              const tipoFinal = item.tipoEtq || data.tipoEtq;
+              
+              if (data.VisualizaVol == true) {
+                await this.serverService.post("/etiqueta/imprimeVolumes", { impressora: data.Impressora, tipo: tipoFinal, confVolumesLineKeys: key, visualizar:false, numVolume: item.VOL, jsonDataList: [item], copias});
+              } else {
+                await this.serverService.post("/etiqueta/imprimeVolumes", { impressora: data.Impressora, tipo: tipoFinal, confVolumesLineKeys: key, visualizar: false, jsonDataList: [item], copias});
+              }
+            }
           } else {
-            await this.serverService.post("/etiqueta/imprimeVolumes", { impressora: data.Impressora, tipo: tipoFinal, confVolumesLineKeys: confVolumesLineKey.join(","), visualizar: false, jsonDataList});
+            for (let i = 0; i < selectedIndices.length; i++) {
+              const path = tblList.getContextByIndex(selectedIndices[i]).getPath();
+              const item = model.getProperty(path);
+              if (i==0)
+                numVol = item.VOL;
+              
+              let key = item.confVolumesLineKey;
+              if (data.Idioma) {
+                key += `@${data.Idioma}@`;
+              } else {
+                key += `@PTB@`;
+              }
+              confVolumesLineKey.push(key);
+              jsonDataList.push(item);
+              
+              if (tipo.length === 0) { tipo.push(item.tipoEtq) };
+            }
+
+            const tipoFinal = tipo[0] || data.tipoEtq;
+            if ( data.VisualizaVol == true) {
+              await this.serverService.post("/etiqueta/imprimeVolumes", { impressora: data.Impressora, tipo: tipoFinal, confVolumesLineKeys: confVolumesLineKey.join(","), visualizar:false, numVolume: numVol, jsonDataList});
+            } else {
+              await this.serverService.post("/etiqueta/imprimeVolumes", { impressora: data.Impressora, tipo: tipoFinal, confVolumesLineKeys: confVolumesLineKey.join(","), visualizar: false, jsonDataList});
+            }
           }
           this.showSuccessMessageBox("Enviado", "Enviado para impressão");
           this.carregaDados();
         } catch (err) {
           this.showExceptionMessageBox("Erro", "Erro ao imprimir", err);
+        } finally {
+          sap.ui.core.BusyIndicator.hide();
         }
         
       },

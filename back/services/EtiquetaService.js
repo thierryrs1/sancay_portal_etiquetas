@@ -24,13 +24,18 @@ class EtiquetaService {
     }
   }
 
-  async getTiposEtiquetaVolume(username) {
+    async getTiposEtiquetaVolume(username) {
     try {
       let res = await DirectDb.executeProcedure("SP_SPS_PORTAL_TIPOS_ETQ_VOLUME");
       try {
-        const manuals = await DirectDb.executeQuery(`SELECT "tipoEtq" FROM SPS_TIPO_ETQ WHERE "isManual" = 'Y'`);
-        const manualTipos = manuals.map(m => m.tipoEtq);
+        const manuals = await DirectDb.executeQuery(`SELECT "tipoEtq", "isManual", "controlaVolume" FROM SPS_TIPO_ETQ`);
+        const manualTipos = manuals.filter(m => m.isManual === 'Y').map(m => m.tipoEtq);
         res = res.filter(r => !manualTipos.includes(r.tipoEtq));
+
+        res = res.map(r => {
+           const dbTipo = manuals.find(m => m.tipoEtq === r.tipoEtq);
+           return { ...r, controlaVolume: dbTipo && dbTipo.controlaVolume === 'N' ? 'N' : 'Y' };
+        });
       } catch (e) {}
 
       if (username !== 'manager') {
