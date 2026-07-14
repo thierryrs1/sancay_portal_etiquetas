@@ -78,6 +78,22 @@ sap.ui.define(
         } catch (e) {
           this.showErrorMessageBox("Erro", e.message);
         }
+      },
+
+      async onDeleteNotificacao(oEvent) {
+        const oItem = oEvent.getParameter("listItem") || oEvent.getSource();
+        const oContext = oItem.getBindingContext("Notificacoes");
+        const idFila = oContext.getProperty("IdFila");
+        
+        try {
+          await this.serverService.post("/etiqueta/deleteNotificacaoErroById", { idFila });
+          const oModel = this.getModel("Notificacoes");
+          let aLista = oModel.getProperty("/lista");
+          aLista = aLista.filter(item => item.IdFila !== idFila);
+          oModel.setProperty("/lista", aLista);
+        } catch (e) {
+          this.showErrorMessageBox("Erro", e.message);
+        }
       }
 
     })

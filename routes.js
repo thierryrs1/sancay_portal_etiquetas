@@ -39,6 +39,7 @@ routes.post('/etiqueta/executaProcedureManual', etiquetaController.executaProced
 routes.post('/etiqueta/executaQueryDinamica', etiquetaController.executaQueryDinamica);
 routes.get('/etiqueta/getNotificacoesErro', etiquetaController.getNotificacoesErro);
 routes.post('/etiqueta/deleteNotificacoesErro', etiquetaController.deleteNotificacoesErro);
+routes.post('/etiqueta/deleteNotificacaoErroById', etiquetaController.deleteNotificacaoErroById);
 
 routes.post("/etiqueta/imprimeEtq", printController.imprimeEtq);
 routes.post("/etiqueta/imprimeVolumes", printController.imprimeVolumes);

@@ -6,13 +6,26 @@
       placement="Bottom"
       class="sapUiResponsivePadding--header sapUiResponsivePadding--footer">
     
-    <List items="{Notificacoes>/lista}" noDataText="Nenhum aviso">
-      <StandardListItem
-          title="{Notificacoes>TipoEtiqueta}"
-          description="{Notificacoes>MensagemErro}"
-          info="{Notificacoes>DataProcessamento}"
-          icon="sap-icon://error"
-          iconDensityAware="false" />
+    <List 
+        items="{Notificacoes>/lista}" 
+        noDataText="Nenhum aviso">
+      <CustomListItem class="sapUiSmallMarginBottom">
+        <HBox alignItems="Center" justifyContent="SpaceBetween" width="100%" class="sapUiTinyMargin">
+            <HBox alignItems="Center">
+                <core:Icon src="sap-icon://message-error" color="Negative" size="2rem" class="sapUiSmallMarginEnd sapUiSmallMarginBegin" />
+                <VBox>
+                    <Text text="{Notificacoes>TipoEtiqueta}" class="sapUiTinyMarginBottom sapMObjectAttributeTitle" />
+                    <Text text="{Notificacoes>MensagemErro}" wrapping="true" class="sapUiTinyMarginBottom sapMObjectAttributeText" />
+                    <Text text="{
+                        path: 'Notificacoes>DataProcessamento',
+                        type: 'sap.ui.model.type.DateTime',
+                        formatOptions: { pattern: 'dd/MM/yyyy HH:mm:ss' }
+                      }" class="sapMObjectStatusNegative" />
+                </VBox>
+            </HBox>
+            <Button icon="sap-icon://decline" type="Transparent" press="onDeleteNotificacao" tooltip="Remover Aviso" class="sapUiTinyMarginEnd" />
+        </HBox>
+      </CustomListItem>
     </List>
 
     <footer>

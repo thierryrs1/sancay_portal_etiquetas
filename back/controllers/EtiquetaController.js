@@ -120,7 +120,7 @@ class EtiquetaController {
 
   async getNotificacoesErro(req, res) {
     try {
-      const login = req.usuario.login;
+      const login = req.userInfo.username;
       const result = await etiquetaService.getNotificacoesErro(login);
       res.send(result);
     } catch (err) {
@@ -130,8 +130,19 @@ class EtiquetaController {
 
   async deleteNotificacoesErro(req, res) {
     try {
-      const login = req.usuario.login;
+      const login = req.userInfo.username;
       await etiquetaService.deleteNotificacoesErro(login);
+      res.send("");
+    } catch (err) {
+      sendError(res, err);
+    }
+  }
+
+  async deleteNotificacaoErroById(req, res) {
+    try {
+      const login = req.userInfo.username;
+      const { idFila } = req.body;
+      await etiquetaService.deleteNotificacaoErroById(login, idFila);
       res.send("");
     } catch (err) {
       sendError(res, err);

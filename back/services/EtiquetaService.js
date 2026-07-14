@@ -176,6 +176,14 @@ class EtiquetaService {
     }
   }
 
+  async deleteNotificacaoErroById(login, idFila) {
+    try {
+      await DirectDb.executeQuery(`DELETE FROM "SPS_FILA_IMPRESSAO" WHERE "Status" = 'Erro' AND "Login" = ? AND "IdFila" = ?`, [login, idFila]);
+    } catch (ex) {
+      throw new Error(`Erro ao deletar notificação individual: ` + errors.getError(ex));
+    }
+  }
+
 }
 
 module.exports = new EtiquetaService();
