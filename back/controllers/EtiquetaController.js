@@ -118,6 +118,26 @@ class EtiquetaController {
     }
   }
 
+  async getNotificacoesErro(req, res) {
+    try {
+      const login = req.usuario.login;
+      const result = await etiquetaService.getNotificacoesErro(login);
+      res.send(result);
+    } catch (err) {
+      sendError(res, err);
+    }
+  }
+
+  async deleteNotificacoesErro(req, res) {
+    try {
+      const login = req.usuario.login;
+      await etiquetaService.deleteNotificacoesErro(login);
+      res.send("");
+    } catch (err) {
+      sendError(res, err);
+    }
+  }
+
 }
 
 module.exports = new EtiquetaController();

@@ -18,6 +18,13 @@
     <headerContent>
       <Toolbar class="sapMTBHeader-CTX">
         <Button
+            id="btnNotificacoes"
+            icon="sap-icon://bell"
+            type="{= ${Notificacoes>/lista}.length > 0 ? 'Reject' : 'Default' }"
+            text="{= ${Notificacoes>/lista}.length > 0 ? ${Notificacoes>/lista}.length : '' }"
+            press="onNotificacoesPress"
+            class="sapUiTinyMarginEnd" />
+        <Button
             text="Sair"
             type="Up"
             icon="sap-icon://log"

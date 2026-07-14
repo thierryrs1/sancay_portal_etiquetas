@@ -159,6 +159,23 @@ class EtiquetaService {
     }
   }
 
+  async getNotificacoesErro(login) {
+    try {
+      const res = await DirectDb.executeQuery(`SELECT "IdFila", "TipoEtiqueta", "MensagemErro", "DataProcessamento" FROM "SPS_FILA_IMPRESSAO" WHERE "Status" = 'Erro' AND "Login" = ? ORDER BY "DataProcessamento" DESC`, [login]);
+      return res || [];
+    } catch (ex) {
+      return [];
+    }
+  }
+
+  async deleteNotificacoesErro(login) {
+    try {
+      await DirectDb.executeQuery(`DELETE FROM "SPS_FILA_IMPRESSAO" WHERE "Status" = 'Erro' AND "Login" = ?`, [login]);
+    } catch (ex) {
+      throw new Error(`Erro ao deletar notificações: ` + errors.getError(ex));
+    }
+  }
+
 }
 
 module.exports = new EtiquetaService();

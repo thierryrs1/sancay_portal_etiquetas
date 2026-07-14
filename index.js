@@ -34,6 +34,10 @@ httpsServer.listen(port, async () => {
     });
     await DirectDb.executeQuery(`SELECT TOP 1 "ItemCode" FROM {db}.OITM`);
     log(`DB Conectado`);
+
+    const FilaBackgroundService = require('./back/services/FilaBackgroundService');
+    FilaBackgroundService.start();
+
     log(`Conectando ServiceLayer`);
     await ServiceLayer.init({
       database: process.env.DB_NAME,

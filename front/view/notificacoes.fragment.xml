@@ -1,0 +1,25 @@
+<core:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core">
+  <Popover
+      title="Avisos de Fila em Background"
+      placement="Bottom"
+      class="sapUiResponsivePadding--header sapUiResponsivePadding--footer">
+    
+    <List items="{Notificacoes>/lista}" noDataText="Nenhum aviso">
+      <StandardListItem
+          title="{Notificacoes>TipoEtiqueta}"
+          description="{Notificacoes>MensagemErro}"
+          info="{Notificacoes>DataProcessamento}"
+          icon="sap-icon://error"
+          iconDensityAware="false" />
+    </List>
+
+    <footer>
+      <Toolbar>
+        <ToolbarSpacer/>
+        <Button text="Limpar Avisos" press="onLimparNotificacoes" type="Reject" enabled="{= ${Notificacoes>/lista}.length > 0 }" />
+      </Toolbar>
+    </footer>
+  </Popover>
+</core:FragmentDefinition>

@@ -8,7 +8,7 @@ const axios = require ('axios');
 const path = require('path');
 class PrintService {
 
-  async imprimeVolumes(impressora, tipo, confVolumesLineKeys, visualizar, numVolume, username, jsonDataList, logIdOrigem, motivoReimpressao) {
+  async imprimeVolumes(impressora, tipo, confVolumesLineKeys, visualizar, numVolume, username, jsonDataList, logIdOrigem, motivoReimpressao, copias = 1) {
     logDebug(`start imprimeVolumes impressora=${impressora}, volumeIds=${confVolumesLineKeys}`);
     if ((confVolumesLineKeys === '' && tipo !== 'SALDO' ) || impressora === '') {
       return;
@@ -22,19 +22,27 @@ class PrintService {
        const template = etqConf[0].pathPrn;
        const parsedData = jsonDataList && jsonDataList.length > 0 ? jsonDataList[0] : {};
        let prnFinal = this.populaPrn(template, parsedData);
+       if (copias > 1) {
+         prnFinal = prnFinal.replace(/\^PQ\d+,?/g, `^PQ${copias},`);
+       }
        
        let pdf = await this.imprimeManual(impressora, tipo, prnFinal, visualizar, username, parsedData, logIdOrigem, motivoReimpressao);
        return pdf;
     }
 
-    let pdf = await this.imprimeEtq(impressora, tipo, [ confVolumesLineKeys ], visualizar, numVolume);
+    let pdf = await this.imprimeEtq(impressora, tipo, [ confVolumesLineKeys ], visualizar, numVolume, copias);
     
     // Gravar Log apenas para impressões reais
     if (!visualizar) {
       try {
          const chavesStr = String(confVolumesLineKeys);
          const chavesArray = chavesStr.includes(',') ? chavesStr.split(',') : [chavesStr];
-         const jsonArray = jsonDataList || [];
+         let jsonArray = jsonDataList || [];
+         let isFromDB = false;
+         if (!jsonDataList || jsonDataList.length === 0) {
+           jsonArray = Array.isArray(pdf) ? pdf : [];
+           isFromDB = true;
+         }
          const numVolumeEscaped = String(numVolume || '').replace(/'/g, "''");
          const usernameEscaped = String(username || '').replace(/'/g, "''");
          const impressoraEscaped = String(impressora).replace(/'/g, "''");
@@ -44,16 +52,44 @@ class PrintService {
          const pad = (n) => (n < 10 ? '0'+n : n);
          const exactTime = `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
          
+         const sanitizeJson = (obj) => {
+           if (Array.isArray(obj)) return obj.map(sanitizeJson);
+           if (obj && typeof obj === 'object') {
+             const newObj = {};
+             for (let key in obj) {
+               if (!/ZPL|EPL|PRN/i.test(key)) {
+                 newObj[key] = obj[key];
+               }
+             }
+             return newObj;
+           }
+           return obj;
+         };
+
          for (let i = 0; i < chavesArray.length; i++) {
             const ch = chavesArray[i].trim().replace(/'/g, "''");
-            const jsonStr = (jsonArray[i] ? JSON.stringify(jsonArray[i]) : '').replace(/'/g, "''");
+            let jsonStr = '';
+            if (isFromDB) {
+               jsonStr = JSON.stringify(sanitizeJson(jsonArray)).replace(/'/g, "''");
+            } else {
+               jsonStr = (jsonArray[i] ? JSON.stringify(sanitizeJson(jsonArray[i])) : '').replace(/'/g, "''");
+            }
             
             if (ch !== '') {
-               const reimpressao = logIdOrigem ? 'Y' : 'N';
-               const motivo = logIdOrigem ? String(motivoReimpressao).replace(/'/g, "''") : '';
-               const idOrigemStr = logIdOrigem ? String(logIdOrigem) : 'NULL';
+               let finalReimpressao = logIdOrigem ? 'Y' : 'N';
+               let finalMotivo = logIdOrigem ? String(motivoReimpressao).replace(/'/g, "''") : '';
+               let finalIdOrigemStr = logIdOrigem ? String(logIdOrigem) : 'NULL';
 
-               const query = `INSERT INTO "SPS_LOG_IMPRESSAO" ("DataHora", "Login", "TipoEtiqueta", "Impressora", "Chaves", "JSON_Data", "Reimpressao", "IdLogOrigem", "MotivoReimpressao") VALUES (TO_TIMESTAMP('${exactTime}', 'YYYY-MM-DD HH24:MI:SS'), '${usernameEscaped}', '${tipoEscaped}', '${impressoraEscaped}', '${ch}', '${jsonStr}', '${reimpressao}', ${idOrigemStr}, '${motivo}')`;
+               if (!logIdOrigem) {
+                   const checkRes = await DirectDb.executeQuery(`SELECT MIN("LogId") AS "MinId" FROM "SPS_LOG_IMPRESSAO" WHERE "TipoEtiqueta" = ? AND "Chaves" = ?`, [tipo, ch]);
+                   if (checkRes && checkRes.length > 0 && checkRes[0].MinId) {
+                       finalIdOrigemStr = String(checkRes[0].MinId);
+                       finalReimpressao = 'Y';
+                       finalMotivo = 'Reimpressão Automática (Duplicada)';
+                   }
+               }
+
+               const query = `INSERT INTO "SPS_LOG_IMPRESSAO" ("DataHora", "Login", "TipoEtiqueta", "Impressora", "Chaves", "JSON_Data", "Reimpressao", "IdLogOrigem", "MotivoReimpressao") VALUES (TO_TIMESTAMP('${exactTime}', 'YYYY-MM-DD HH24:MI:SS'), '${usernameEscaped}', '${tipoEscaped}', '${impressoraEscaped}', '${ch}', '${jsonStr}', '${finalReimpressao}', ${finalIdOrigemStr}, '${finalMotivo}')`;
                await DirectDb.executeQuery(query);
             }
          }
@@ -97,7 +133,7 @@ class PrintService {
   }
 
 
-  async imprimeEtq(impressora, tipo, parms, visualizar, numVol) {
+  async imprimeEtq(impressora, tipo, parms, visualizar = false, numVol = undefined, copias = 1) {
     if (!tipo || tipo == "") {
       const msg = "Tipo de impressão não informado";
       logError(`imprimeEtq: ${msg}`);
@@ -195,6 +231,9 @@ class PrintService {
         template = template.replace("@KITNN", `KIT 1/${dados.U_SPS_Vol_Kit}`);
       }
       let prn = this.populaPrn(template, dados);
+      if (copias > 1) {
+        prn = prn.replace(/\^PQ\d+,?/g, `^PQ${copias},`);
+      }
       logDebug(prn);
       if (visualizar){
         let pdf = this.visualizarEtiqueta(prn);
@@ -222,6 +261,9 @@ class PrintService {
 
     }
     logDebug("end imprimeEtq");
+    if (!visualizar) {
+      return dadosEtq;
+    }
   }
 
   async visualizarEtiqueta(prn) {

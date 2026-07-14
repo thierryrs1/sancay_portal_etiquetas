@@ -37,6 +37,8 @@ routes.get('/etiqueta/getFiltrosLogImpressao', etiquetaController.getFiltrosLogI
 routes.post('/etiqueta/validaEtiqueta', etiquetaController.validaEtiqueta);
 routes.post('/etiqueta/executaProcedureManual', etiquetaController.executaProcedureManual);
 routes.post('/etiqueta/executaQueryDinamica', etiquetaController.executaQueryDinamica);
+routes.get('/etiqueta/getNotificacoesErro', etiquetaController.getNotificacoesErro);
+routes.post('/etiqueta/deleteNotificacoesErro', etiquetaController.deleteNotificacoesErro);
 
 routes.post("/etiqueta/imprimeEtq", printController.imprimeEtq);
 routes.post("/etiqueta/imprimeVolumes", printController.imprimeVolumes);

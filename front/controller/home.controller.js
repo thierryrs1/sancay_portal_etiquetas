@@ -8,8 +8,10 @@ sap.ui.define(
       route: "home",
       async initialize() {
         this.setModel(new JSONModel(), "Data");
+        this.setModel(new JSONModel({ lista: [] }), "Notificacoes");
         this.setModelProperty("Data", "CompanyName", sessionStorage.getItem("companyName"));
         await this.setPerms();
+        this.buscaNotificacoes();
       },
       setPerms: async function() {
         let perms = JSON.parse(sessionStorage.getItem("perms") || "{}");
@@ -40,6 +42,42 @@ sap.ui.define(
       },
       onClickLogImpressao: function() {
         this.navTo("logimpressao");
+      },
+      
+      async buscaNotificacoes() {
+        try {
+          const res = await this.serverService.get("/etiqueta/getNotificacoesErro");
+          this.setModelProperty("Notificacoes", "lista", res || []);
+        } catch (e) { }
+      },
+
+      async onNotificacoesPress(oEvent) {
+        const oButton = oEvent.getSource();
+        if (!this._pPopover) {
+          this._pPopover = sap.ui.core.Fragment.load({
+            id: this.getView().getId(),
+            name: "sps.wms.view.notificacoes",
+            controller: this
+          }).then((oPopover) => {
+            this.getView().addDependent(oPopover);
+            return oPopover;
+          });
+        }
+        this._pPopover.then((oPopover) => {
+          oPopover.openBy(oButton);
+        });
+      },
+
+      async onLimparNotificacoes() {
+        try {
+          await this.serverService.post("/etiqueta/deleteNotificacoesErro");
+          this.setModelProperty("Notificacoes", "lista", []);
+          if (this._pPopover) {
+            this._pPopover.then(p => p.close());
+          }
+        } catch (e) {
+          this.showErrorMessageBox("Erro", e.message);
+        }
       }
 
     })
