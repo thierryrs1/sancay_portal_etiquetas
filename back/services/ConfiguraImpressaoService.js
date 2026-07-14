@@ -139,15 +139,15 @@ class ConfiguraImpressaoService {
       SELECT DEFINITION FN 
       FROM PUBLIC.FUNCTIONS 
       WHERE SCHEMA_NAME = ? 
-      AND FUNCTION_NAME = 'FN_SPS_WMS_ETIQ_REGRA';`;
+      AND FUNCTION_NAME = 'FN_SPS_ETIQ_REGRA';`;
     } else {
       query = `
-      SELECT OBJECT_DEFINITION(OBJECT_ID('FN_SPS_WMS_ETIQ_REGRA', 'FUNCTION')) FN;`;
+      SELECT OBJECT_DEFINITION(OBJECT_ID('FN_SPS_ETIQ_REGRA', 'FUNCTION')) FN;`;
     }
     const res = await DirectDb.executeQuery(query, [process.env.DB_NAME]);
     if (!res || res.length == 0) {
       throw new Error(
-        `Erro ao obter definição da function FN_SPS_WMS_ETIQ_REGRA`
+        `Erro ao obter definição da function FN_SPS_ETIQ_REGRA`
       )
     }
     const sp = res[0].FN;
@@ -155,26 +155,50 @@ class ConfiguraImpressaoService {
     const headerLines = [];
     const casesLines = [];
     const joinsLines = [];
-    let section = "header";
+    let beginIdx = -1;
+    let endIdx = -1;
+    
     for (let i = 0; i < spLines.length; i++) {
-      const line = spLines[i];
-      if (section == "header") {
-        headerLines.push(line);
-        if (/^CASE (:?@|:)oper/.test(line)) {
-          section = "cases";
+      if (/BEGIN/i.test(spLines[i])) {
+        beginIdx = i;
+        
+        // Avança o cabeçalho para englobar as variáveis DECLARE
+        while (beginIdx + 1 < spLines.length) {
+          const nextLine = spLines[beginIdx + 1].trim();
+          if (nextLine === '' || /^DECLARE\b/i.test(nextLine)) {
+            beginIdx++;
+          } else {
+            break;
+          }
         }
-        continue;
+        break;
       }
-      if (section == "cases") {
-        casesLines.push(line);
-        if (/^FROM/.test(spLines[i + 2])) {
-          section = "joins";
+    }
+    
+    // Procura por um marcador explícito para encerrar as regras
+    for (let i = beginIdx + 1; i < spLines.length; i++) {
+      if (/-- FIM DAS REGRAS/i.test(spLines[i])) {
+        endIdx = i;
+        break;
+      }
+    }
+    
+    // Se não encontrou o marcador, pega o último END;
+    if (endIdx === -1) {
+      for (let i = spLines.length - 1; i >= 0; i--) {
+        if (/^END;?/.test(spLines[i].trim())) {
+          endIdx = i;
+          break;
         }
-        continue;
       }
-      if (section == "joins") {
-        joinsLines.push(line);
-      }
+    }
+    
+    if (beginIdx !== -1 && endIdx !== -1 && endIdx > beginIdx) {
+      headerLines.push(...spLines.slice(0, beginIdx + 1));
+      casesLines.push(...spLines.slice(beginIdx + 1, endIdx));
+      joinsLines.push(...spLines.slice(endIdx));
+    } else {
+      headerLines.push(...spLines);
     }
     const header = headerLines.join("\r\n");
     const cases = casesLines.join("\r\n");

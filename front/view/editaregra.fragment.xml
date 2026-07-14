@@ -3,7 +3,7 @@
   xmlns:core="sap.ui.core"
   xmlns:data="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1"
 >
-  <Dialog title="Function de Regra de Tipo de Impressão: FN_SPS_WMS_ETIQ_REGRA"
+  <Dialog title="Function de Regra de Tipo de Impressão: FN_SPS_ETIQ_REGRA"
     contentHeight="100%"
     contentWidth="100%">
     <VBox class="sapUiSmallMargin" height="100%">
@@ -16,7 +16,7 @@
             editable="false" />
         </content>
       </Panel>
-      <Panel expandable="true" headerText="Regras (CASE)" width="auto" class="sapUiResponsiveMargin">
+      <Panel expandable="true" headerText="Regras (IF..ELSE)" width="auto" class="sapUiResponsiveMargin">
         <content>
           <TextArea
             value="{regraFn>/cases}"
@@ -25,7 +25,7 @@
             editable="true" />
         </content>
       </Panel>
-      <Panel expandable="true" headerText="JOINS" width="auto" class="sapUiResponsiveMargin">
+      <Panel expandable="true" headerText="FIM" width="auto" class="sapUiResponsiveMargin">
         <content>
           <TextArea
             value="{regraFn>/joins}"

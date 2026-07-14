@@ -60,8 +60,7 @@ class ConfiguraImpressaoController {
 
   async gravaRegraFn(req, res) {
     try {
-      const { jsCode } = req.body;
-      await configuraImpressaoService.gravaRegraFn(jsCode);
+      await configuraImpressaoService.gravaRegraFn(req.body);
       res.send("");
     } catch (err) {
       sendError(res, err);
