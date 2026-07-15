@@ -49,7 +49,7 @@ class ApiController {
 
       if (imprimirNaHora) {
         const printService = require('../services/PrintService');
-        await printService.imprimeVolumes(impressora, tipoEtiqueta, Parametro, false, undefined, userCode, null, null, null, numCopias);
+        await printService.imprimeVolumes(impressora, tipoEtiqueta, Parametro, false, undefined, userCode, null, null, null, numCopias, 'API');
         return res.status(200).json({ status: "sucesso", mensagem: "Etiqueta processada e enviada diretamente para a impressora." });
       } else {
         // Inserir direto na fila para o Worker background processar

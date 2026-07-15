@@ -43,7 +43,7 @@ class FilaBackgroundService {
 
         try {
           // 4. Imprime
-          await printService.imprimeVolumes(fila.Impressora, fila.TipoEtiqueta, fila.Chaves, false, undefined, fila.Login, null, null, null, fila.Copias);
+          await printService.imprimeVolumes(fila.Impressora, fila.TipoEtiqueta, fila.Chaves, false, undefined, fila.Login, null, null, null, fila.Copias, 'Fila');
           
           // 5. Sucesso
           await DirectDb.executeQuery(`UPDATE "SPS_FILA_IMPRESSAO" SET "Status" = 'Impresso', "DataProcessamento" = CURRENT_TIMESTAMP WHERE "IdFila" = ?`, [fila.IdFila]);

@@ -145,6 +145,20 @@
                 state="Information" />
           </t:template>
         </t:Column>
+        <t:Column width="8rem" sortProperty="Origem" filterProperty="Origem">
+          <Label text="Origem" />
+          <t:template>
+            <ObjectStatus
+                text="{Data>Origem}"
+                state="{= ${Data>Origem} === 'API' ? 'Success' : (${Data>Origem} === 'Fila' ? 'Warning' : 'Information')}" />
+          </t:template>
+        </t:Column>
+        <t:Column width="5rem" sortProperty="Copias" filterProperty="Copias" hAlign="End">
+          <Label text="Cópias" />
+          <t:template>
+            <Text text="{Data>Copias}" />
+          </t:template>
+        </t:Column>
         <t:Column width="15rem" sortProperty="Chaves" filterProperty="Chaves">
           <Label text="Parâmetros" />
           <t:template>
