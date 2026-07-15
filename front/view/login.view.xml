@@ -60,25 +60,13 @@
                                         <Input
                                             placeholder="Usuário"
                                             id="userInput"
-                                            value="{
-                                                path: 'login>/UserName',
-                                                type : 'sap.ui.model.type.String',
-                                                constraints : {
-                                                    minLength: 1
-                                                }
-                                            }"
-                                            change="onUserChange"
+                                            value="{login>/UserName}"
+                                            submit="onUserSubmit"
                                             width="15rem"/>
                                         <Input
                                             placeholder="Senha"
                                             id="passwordInput"
-                                            value="{
-                                                path: 'login>/Password',
-                                                type : 'sap.ui.model.type.String',
-                                                constraints : {
-                                                    minLength: 1
-                                                }
-                                            }"
+                                            value="{login>/Password}"
                                             type="Password"
                                             submit="onLoginPress"
                                             width="15rem" />

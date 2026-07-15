@@ -45,14 +45,20 @@ class ApiController {
 
       const impressora = impressoraRes[0].impressora;
       const numCopias = copias ? parseInt(copias, 10) : 1;
+      const imprimirNaHora = req.body.imediato === true || req.body.imediato === 'true';
 
-      // Inserir direto na fila para o Worker background processar
-      await DirectDb.executeQuery(
-        `INSERT INTO "SPS_FILA_IMPRESSAO" ("Status", "TipoEtiqueta", "Impressora", "Chaves", "Copias", "Login", "DataCriacao") VALUES ('Pendente', ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)`,
-        [tipoEtiqueta, impressora, Parametro, numCopias, userCode]
-      );
-
-      return res.status(200).json({ status: "sucesso", mensagem: "Etiqueta enviada para a fila de impressão." });
+      if (imprimirNaHora) {
+        const printService = require('../services/PrintService');
+        await printService.imprimeVolumes(impressora, tipoEtiqueta, Parametro, false, undefined, userCode, null, null, null, numCopias);
+        return res.status(200).json({ status: "sucesso", mensagem: "Etiqueta processada e enviada diretamente para a impressora." });
+      } else {
+        // Inserir direto na fila para o Worker background processar
+        await DirectDb.executeQuery(
+          `INSERT INTO "SPS_FILA_IMPRESSAO" ("Status", "TipoEtiqueta", "Impressora", "Chaves", "Copias", "Login", "DataCriacao") VALUES ('Pendente', ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)`,
+          [tipoEtiqueta, impressora, Parametro, numCopias, userCode]
+        );
+        return res.status(200).json({ status: "sucesso", mensagem: "Etiqueta enviada para a fila de impressão." });
+      }
 
     } catch (err) {
       sendError(res, err);

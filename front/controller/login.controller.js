@@ -30,14 +30,11 @@ sap.ui.define(
 
         this.modelLogin = this.getModel("login");
 
-        // attach handlers for validation errors
-        this._attachHandlersValidation();
 
-        // Coloca o foco no campo Usuário
-        const oUserInput = this.byId("userInput");
-        oUserInput.addEventDelegate({
-          onAfterRendering() {
-            oUserInput.focus();
+        // Coloca o foco no campo Usuário na inicialização
+        this.getView().addEventDelegate({
+          onAfterRendering: () => {
+            this.byId("userInput").focus();
           }
         });
         
@@ -53,6 +50,10 @@ sap.ui.define(
           // ignora se falhar
         }
       },
+
+      onUserSubmit() {
+        this.byId("passwordInput").focus();
+      },
       /**
        * Confirmação do login
        */
@@ -60,22 +61,13 @@ sap.ui.define(
         try {
           this.getView().setBusy(true);
 
-          // Campos que serão validados
-          const oView = this.getView();
-
-          const aInputs = [
-            oView.byId("userInput"),
-            oView.byId("passwordInput")
-          ];
-
-          const bValidationError = this.validator.validateEmptyFields(aInputs);
+          const username = this.byId("userInput").getValue();
+          const password = this.byId("passwordInput").getValue();
 
           // Se os campos são válidos
-          if (bValidationError) {
+          if (!username || !password) {
             MessageToast.show("Informe o Usuário e Senha");
           } else {
-            const username = this.byId("userInput").getValue();
-            const password = this.byId("passwordInput").getValue();
             sessionStorage.setItem("token", "");
             
             if (username == "ConfigSPS") {
@@ -112,19 +104,6 @@ sap.ui.define(
         }
       },
 
-      /**
-       * Seta os campos que serão validados
-       */
-      _attachHandlersValidation() {
-        const oView = this.getView();
-        sap.ui
-          .getCore()
-          .getMessageManager()
-          .registerObject(oView.byId("userInput"), true);
-        sap.ui
-          .getCore()
-          .getMessageManager()
-          .registerObject(oView.byId("passwordInput"), true);
-      }
+
     })
 );
