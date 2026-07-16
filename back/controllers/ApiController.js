@@ -21,7 +21,7 @@ class ApiController {
 
       // Validar se o tipo de etiqueta existe e se não é manual
       const tipoEtqRes = await DirectDb.executeQuery(
-        `SELECT "isManual" FROM "SPS_TIPO_ETQ" WHERE "tipoEtq" = ?`,
+        `SELECT "isManual", "controlaVolume" FROM "SPS_TIPO_ETQ" WHERE "tipoEtq" = ?`,
         [tipoEtiqueta]
       );
 
@@ -31,6 +31,12 @@ class ApiController {
 
       if (tipoEtqRes[0].isManual === 'Y') {
         return res.status(400).json({ error: `O tipo de etiqueta '${tipoEtiqueta}' é uma etiqueta manual e não pode ser gerada via API.` });
+      }
+
+      const numCopias = copias ? parseInt(copias, 10) : 1;
+
+      if (tipoEtqRes[0].controlaVolume === 'Y' && numCopias > 1) {
+        return res.status(400).json({ error: `A etiqueta tipo ${tipoEtiqueta} não permite imprimir mais de 1 cópia.` });
       }
 
       // Buscar Impressora Padrão
@@ -44,7 +50,6 @@ class ApiController {
       }
 
       const impressora = impressoraRes[0].impressora;
-      const numCopias = copias ? parseInt(copias, 10) : 1;
       const imprimirNaHora = req.body.imediato === true || req.body.imediato === 'true';
 
       if (imprimirNaHora) {

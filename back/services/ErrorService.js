@@ -17,7 +17,7 @@ module.exports = {
     res.status(status).send({
       message,
       status,
-      detail,
+      detail: detail === message ? undefined : detail,
     });
   },
   getError(err) {

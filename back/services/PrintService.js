@@ -15,9 +15,14 @@ class PrintService {
     }
 
     if (confVolumesLineKeys === 'Manual') {
-       const etqConf = await DirectDb.executeQuery(`SELECT "pathPrn" FROM SPS_TIPO_ETQ WHERE "tipoEtq" = ?`, [tipo]);
+       const etqConf = await DirectDb.executeQuery(`SELECT "pathPrn", "controlaVolume" FROM SPS_TIPO_ETQ WHERE "tipoEtq" = ?`, [tipo]);
        if (!etqConf || etqConf.length === 0) {
            throw new Error("Modelo de etiqueta não existe mais");
+       }
+       if (etqConf[0].controlaVolume === 'Y' && copias > 1) {
+           const err = new Error(`A etiqueta tipo ${tipo} não permite imprimir mais de 1 cópia.`);
+           err.status = 400;
+           throw err;
        }
        const template = etqConf[0].pathPrn;
        const parsedData = jsonDataList && jsonDataList.length > 0 ? jsonDataList[0] : {};
@@ -157,7 +162,8 @@ class PrintService {
       SELECT TOP 1
       TI."impressora",
       TE."pathPrn",
-      TE."procedure"
+      TE."procedure",
+      TE."controlaVolume"
       FROM
         SPS_TIPO_IMP TI
         JOIN SPS_TIPO_ETQ TE ON TE."tipoEtq" = TI."tipoEtq"
@@ -178,7 +184,14 @@ class PrintService {
       logError(`imprimeEtq: ${msg}`);
       throw new Error(msg);
     }
-    const { pathPrn, procedure } = printConf[0];
+    const { pathPrn, procedure, controlaVolume } = printConf[0];
+    if (controlaVolume === 'Y' && copias > 1) {
+      const msg = `A etiqueta tipo ${tipo} não permite imprimir mais de 1 cópia.`;
+      logError(`imprimeEtq: ${msg}`);
+      const err = new Error(msg);
+      err.status = 400;
+      throw err;
+    }
     if (!pathPrn || pathPrn == "") {
       const msg = `Template de impressão não definido para tipo ${tipo}`;
       logError(`imprimeEtq: ${msg}`);
