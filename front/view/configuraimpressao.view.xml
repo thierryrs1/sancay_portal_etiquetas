@@ -39,17 +39,18 @@
           width="100%"
           rowHeight="48">
           <t:layoutData>
-            <FlexItemData growFactor="6" />
+            <FlexItemData growFactor="8" />
           </t:layoutData>
           <t:extension>
             <OverflowToolbar>
               <Title text="Tipos Etiquetas" />
               <ToolbarSpacer />
+              <Button icon="sap-icon://world" text="Idiomas" press="onIdiomasPressed" />
               <Button icon="sap-icon://list" text="Configurar Dropdowns" press="onConfigurarTags" enabled="{= ${TipoEtq>/list}.length > 0 }" />
             </OverflowToolbar>
           </t:extension>
         <t:columns>
-          <t:Column width="11rem">
+          <t:Column width="15rem">
             <Label
                 text="Tipo"
                 textAlign="Left"
@@ -101,7 +102,16 @@
                   visible="{= ${TipoEtq>tipoEtq}!==null}" />
             </t:template>
           </t:Column>
-          <t:Column width="5rem">
+          <t:Column width="6rem">
+            <Label text="Idioma?" />
+            <t:template>
+              <CheckBox
+                  selected="{= ${TipoEtq>controlaIdioma} === 'Y' }"
+                  select="onControlaIdiomaSelect"
+                  visible="{= ${TipoEtq>tipoEtq}!==null}" />
+            </t:template>
+          </t:Column>
+          <t:Column width="8rem">
             <Label
                 text="PRN"
                 textAlign="Left"
@@ -116,7 +126,7 @@
               </HBox>
             </t:template>
           </t:Column>
-          <t:Column width="16rem">
+          <t:Column width="20rem">
             <Label
                 text="Procedure"
                 textAlign="Left"
@@ -157,11 +167,13 @@
           width="100%"
           rowHeight="48">
         <t:layoutData>
-          <FlexItemData growFactor="4" />
+          <FlexItemData growFactor="2" />
         </t:layoutData>
         <t:extension>
-            <Title text="Tipo x Impressoras" class="sapUiTinyMarginTop"/>
-          </t:extension>
+          <OverflowToolbar>
+            <Title text="Tipo x Impressoras" />
+          </OverflowToolbar>
+        </t:extension>
         <t:columns>
           <t:Column width="12rem">
             <Label

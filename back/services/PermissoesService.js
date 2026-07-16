@@ -14,7 +14,7 @@ class PermissoesService {
       const tipos = await DirectDb.executeProcedure("SP_SPS_PORTAL_TIPOS_ETQ_VOLUME");
       
       // Busca as permissões da tabela nova
-      const etqPerms = await DirectDb.executeQuery('SELECT "login", "etiqueta", "acesso" FROM "SPS_PERMISSOES_ETQ"');
+      const etqPerms = await DirectDb.executeProcedure('SP_SPS_PERMISSOES_ETQ', ['']);
       
       for (let user of res) {
         // Inicializa todas as etiquetas com 'N' para o usuário

@@ -56,7 +56,8 @@ class ConfiguraImpressaoService {
         "isManual",
         "pathPrn",
         "procedure",
-        "controlaVolume"
+        "controlaVolume",
+        "controlaIdioma"
         FROM SPS_TIPO_ETQ
         ORDER BY "tipoEtq";
       `;
@@ -108,9 +109,10 @@ class ConfiguraImpressaoService {
         const icon = t.icon ? t.icon.replace(/'/g, "''") : "";
         const isManual = t.isManual === "Y" || t.isManual === true ? "Y" : "N";
         const controlaVolume = t.controlaVolume === "Y" || t.controlaVolume === true ? "Y" : "N";
+        const controlaIdioma = t.controlaIdioma === "Y" || t.controlaIdioma === true ? "Y" : "N";
         query += `
-        INSERT INTO SPS_TIPO_ETQ ("tipoEtq", "pathPrn", "procedure", "icon", "isManual", "controlaVolume")
-        VALUES ('${tipoEtq}', '${pathPrn}', '${procedure}', '${icon}', '${isManual}', '${controlaVolume}');
+        INSERT INTO SPS_TIPO_ETQ ("tipoEtq", "pathPrn", "procedure", "icon", "isManual", "controlaVolume", "controlaIdioma")
+        VALUES ('${tipoEtq}', '${pathPrn}', '${procedure}', '${icon}', '${isManual}', '${controlaVolume}', '${controlaIdioma}');
         `;
       }
       for (let i = 0; i < tipoImps.length; i++) {
@@ -249,6 +251,30 @@ class ConfiguraImpressaoService {
       }
     } catch (ex) {
       throw new Error(`Erro salvando tags: ` + errors.getError(ex));
+    }
+  }
+
+  async getIdiomas() {
+    try {
+      const res = await DirectDb.executeQuery(`SELECT "sigla", "descricao" FROM "SPS_IDIOMAS" ORDER BY "descricao"`);
+      return res;
+    } catch (ex) {
+      // If table doesn't exist yet, return empty
+      return [];
+    }
+  }
+
+  async saveIdiomas(idiomas) {
+    try {
+      await DirectDb.executeQuery(`DELETE FROM "SPS_IDIOMAS"`);
+      for (const i of idiomas) {
+        if (!i.sigla) continue;
+        const s = i.sigla.replace(/'/g, "''");
+        const d = i.descricao ? i.descricao.replace(/'/g, "''") : "";
+        await DirectDb.executeQuery(`INSERT INTO "SPS_IDIOMAS" ("sigla", "descricao") VALUES ('${s}', '${d}')`);
+      }
+    } catch (ex) {
+      throw new Error(`Erro salvando idiomas: ` + errors.getError(ex));
     }
   }
 

@@ -127,10 +127,9 @@
                               forceSelection="true"
                               selectedKey="{Data>/Idioma}"
                               maxWidth="26rem"
-                              class="sapUiTinyMarginEnd">
-                <core:Item key="PTB" text="Português Brasil" />
-                <core:Item key="EN" text="Inglês" />
-                <core:Item key="ES" text="Espanhol" />
+                              class="sapUiTinyMarginEnd"
+                              items="{Idiomas>/list}">
+                <core:Item key="{Idiomas>sigla}" text="{Idiomas>descricao}" />
               </Select>
               <Button 
                               icon="sap-icon://favorite" 

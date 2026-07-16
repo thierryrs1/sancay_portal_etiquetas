@@ -46,6 +46,16 @@ sap.ui.define(
         this.carregaOrdensProducao();
         this.carregaImpressoras();
         this.carregaFornecedores();
+        this.carregaIdiomas();
+      },
+
+      async carregaIdiomas() {
+        try {
+          const idiomas = await this.serverService.get("/configuraImpressao/getIdiomas");
+          this.setModel(new JSONModel({ list: idiomas }), "Idiomas");
+        } catch (err) {
+          // ignore or show error
+        }
       },
 
       async carregaOrdensProducao() {
@@ -340,6 +350,7 @@ sap.ui.define(
         const tipos = this.getModelProperty("TiposEtiqueta", "Items");
         const selectedTipo = tipos.find(t => t.tipoEtq === data.tipoEtq);
         const permiteCopias = selectedTipo && selectedTipo.controlaVolume === 'N';
+        const controlaIdioma = selectedTipo && selectedTipo.controlaIdioma === 'Y';
 
         const confVolumesLineKey = [];
         const jsonDataList = [];
@@ -355,10 +366,12 @@ sap.ui.define(
               const item = model.getProperty(path);
               
               let key = item.confVolumesLineKey;
-              if (data.Idioma) {
-                key += `@${data.Idioma}@`;
-              } else {
-                key += `@PTB@`;
+              if (controlaIdioma) {
+                if (data.Idioma) {
+                  key += `@${data.Idioma}@`;
+                } else {
+                  key += `@PTB@`;
+                }
               }
               const copias = parseInt(item.CopiasDesejadas, 10) || 1;
               const tipoFinal = item.tipoEtq || data.tipoEtq;
@@ -377,10 +390,12 @@ sap.ui.define(
                 numVol = item.VOL;
               
               let key = item.confVolumesLineKey;
-              if (data.Idioma) {
-                key += `@${data.Idioma}@`;
-              } else {
-                key += `@PTB@`;
+              if (controlaIdioma) {
+                if (data.Idioma) {
+                  key += `@${data.Idioma}@`;
+                } else {
+                  key += `@PTB@`;
+                }
               }
               confVolumesLineKey.push(key);
               jsonDataList.push(item);
@@ -417,6 +432,10 @@ sap.ui.define(
           this.showErrorMessageBox("Erro", "Impressora não selecionada");
           return;
         }
+
+        const tipos = this.getModelProperty("TiposEtiqueta", "Items");
+        const selectedTipo = tipos.find(t => t.tipoEtq === data.tipoEtq);
+        const controlaIdioma = selectedTipo && selectedTipo.controlaIdioma === 'Y';
       
         const confVolumesLineKey = [];
         let pdfName = '';
@@ -430,10 +449,12 @@ sap.ui.define(
             numVol = item.VOL;
 
           let key = item.confVolumesLineKey;
-          if (data.Idioma) {
-            key += `@${data.Idioma}@`;
-          } else {
-            key += `@PTB@`;
+          if (controlaIdioma) {
+            if (data.Idioma) {
+              key += `@${data.Idioma}@`;
+            } else {
+              key += `@PTB@`;
+            }
           }
           confVolumesLineKey.push(key);
 

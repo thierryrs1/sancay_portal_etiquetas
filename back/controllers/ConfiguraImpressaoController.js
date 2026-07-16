@@ -86,6 +86,24 @@ class ConfiguraImpressaoController {
       sendError(res, err);
     }
   }
+  async getIdiomas(req, res) {
+    try {
+      const ret = await configuraImpressaoService.getIdiomas();
+      res.send(ret);
+    } catch (err) {
+      sendError(res, err);
+    }
+  }
+
+  async saveIdiomas(req, res) {
+    try {
+      const idiomas = req.body;
+      await configuraImpressaoService.saveIdiomas(idiomas);
+      res.send("");
+    } catch (err) {
+      sendError(res, err);
+    }
+  }
 
 }
 

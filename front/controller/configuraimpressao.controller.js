@@ -183,6 +183,12 @@ sap.ui.define(
         this.getModel("TipoEtq").setProperty(path + "/controlaVolume", selected ? "Y" : "N");
       },
 
+      onControlaIdiomaSelect: function(oEvent) {
+        const selected = oEvent.getParameter("selected");
+        const path = oEvent.getSource().getBindingContext("TipoEtq").getPath();
+        this.getModel("TipoEtq").setProperty(path + "/controlaIdioma", selected ? "Y" : "N");
+      },
+
       addTipoImp() {
         if (!this.tipoEtqSelecionado) {
           return;
@@ -339,6 +345,58 @@ sap.ui.define(
         }
         sap.ui.core.BusyIndicator.hide();
       },
+
+      async onIdiomasPressed() {
+        sap.ui.core.BusyIndicator.show();
+        try {
+          const idiomas = await this.serverService.get("/configuraImpressao/getIdiomas");
+          this.setModel(new sap.ui.model.json.JSONModel({ list: idiomas }), "Idiomas");
+
+          if (!this.idiomasDialog) {
+            this.idiomasDialog = await sap.ui.core.Fragment.load({
+              id: this.getView().getId(),
+              name: "sps.wms.view.idiomas",
+              controller: this
+            });
+            this.getView().addDependent(this.idiomasDialog);
+          }
+          this.idiomasDialog.open();
+        } catch (err) {
+          this.showExceptionMessageBox("Erro", "Erro ao carregar idiomas", err);
+        }
+        sap.ui.core.BusyIndicator.hide();
+      },
+
+      onAddIdioma() {
+        const list = this.getModel("Idiomas").getProperty("/list");
+        list.push({ sigla: "", descricao: "" });
+        this.getModel("Idiomas").refresh();
+      },
+
+      onDeleteIdioma(oEvent) {
+        const path = oEvent.getSource().getBindingContext("Idiomas").getPath();
+        const idx = parseInt(path.split("/")[2]);
+        const list = this.getModel("Idiomas").getProperty("/list");
+        list.splice(idx, 1);
+        this.getModel("Idiomas").refresh();
+      },
+
+      onCancelarIdiomas() {
+        this.idiomasDialog.close();
+      },
+
+      async onGravarIdiomas() {
+        const list = this.getModel("Idiomas").getProperty("/list");
+        sap.ui.core.BusyIndicator.show();
+        try {
+          await this.serverService.post("/configuraImpressao/saveIdiomas", list);
+          this.showSuccessMessageBox("Sucesso", "Idiomas gravados com sucesso!");
+          this.idiomasDialog.close();
+        } catch (err) {
+          this.showExceptionMessageBox("Erro", "Erro ao gravar idiomas", err);
+        }
+        sap.ui.core.BusyIndicator.hide();
+      }
 
     })
 );

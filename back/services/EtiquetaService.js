@@ -28,19 +28,19 @@ class EtiquetaService {
     try {
       let res = await DirectDb.executeProcedure("SP_SPS_PORTAL_TIPOS_ETQ_VOLUME");
       try {
-        const manuals = await DirectDb.executeQuery(`SELECT "tipoEtq", "isManual", "controlaVolume" FROM SPS_TIPO_ETQ`);
+        const manuals = await DirectDb.executeQuery(`SELECT "tipoEtq", "isManual", "controlaVolume", "controlaIdioma" FROM SPS_TIPO_ETQ`);
         const manualTipos = manuals.filter(m => m.isManual === 'Y').map(m => m.tipoEtq);
         res = res.filter(r => !manualTipos.includes(r.tipoEtq));
 
         res = res.map(r => {
            const dbTipo = manuals.find(m => m.tipoEtq === r.tipoEtq);
-           return { ...r, controlaVolume: dbTipo && dbTipo.controlaVolume === 'N' ? 'N' : 'Y' };
+           return { ...r, controlaVolume: dbTipo && dbTipo.controlaVolume === 'N' ? 'N' : 'Y', controlaIdioma: dbTipo && dbTipo.controlaIdioma === 'Y' ? 'Y' : 'N' };
         });
       } catch (e) {}
 
       if (username !== 'manager') {
-        const perms = await DirectDb.executeQuery(`SELECT "etiqueta" FROM SPS_PERMISSOES_ETQ WHERE "login" = ? AND "acesso" = 'Y'`, [username]);
-        const allowed = perms.map(p => p.etiqueta);
+        const perms = await DirectDb.executeProcedure(`SP_SPS_PERMISSOES_ETQ`, [username]);
+        const allowed = perms.filter(p => p.acesso === 'Y').map(p => p.etiqueta);
         res = res.filter(r => allowed.includes(r.tipoEtq));
       }
       return res;
@@ -56,8 +56,8 @@ class EtiquetaService {
       let res = await DirectDb.executeQuery(`SELECT "tipoEtq", "icon", "isManual", "pathPrn", "procedure" FROM SPS_TIPO_ETQ WHERE "isManual" = 'Y'`);
       
       if (username !== 'manager') {
-        const perms = await DirectDb.executeQuery(`SELECT "etiqueta" FROM SPS_PERMISSOES_ETQ WHERE "login" = ? AND "acesso" = 'Y'`, [username]);
-        const allowed = perms.map(p => p.etiqueta);
+        const perms = await DirectDb.executeProcedure(`SP_SPS_PERMISSOES_ETQ`, [username]);
+        const allowed = perms.filter(p => p.acesso === 'Y').map(p => p.etiqueta);
         res = res.filter(r => allowed.includes(r.tipoEtq));
       }
       return res;

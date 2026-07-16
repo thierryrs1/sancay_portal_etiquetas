@@ -64,5 +64,7 @@ routes.get("/configuraImpressao/getRegraFn", configuraImpressaoController.getReg
 routes.post("/configuraImpressao/gravaRegraFn", configuraImpressaoController.gravaRegraFn);
 routes.post("/configuraImpressao/getTags", configuraImpressaoController.getTags);
 routes.post("/configuraImpressao/saveTags", configuraImpressaoController.saveTags);
+routes.get("/configuraImpressao/getIdiomas", configuraImpressaoController.getIdiomas);
+routes.post("/configuraImpressao/saveIdiomas", configuraImpressaoController.saveIdiomas);
 
 module.exports = routes;
