@@ -13,7 +13,7 @@ class ApiController {
         return res.status(401).json({ error: 'Não Autorizado. Token inválido ou não configurado.' });
       }
 
-      const { tipoEtiqueta, Parametro, copias, userCode } = req.body;
+      const { tipoEtiqueta, Parametro, copias, userCode, Impressora } = req.body;
 
       if (!tipoEtiqueta || !Parametro || !userCode) {
          return res.status(400).json({ error: 'Parâmetros obrigatórios ausentes. Envie: tipoEtiqueta, Parametro, userCode' });
@@ -39,17 +39,30 @@ class ApiController {
         return res.status(400).json({ error: `A etiqueta tipo ${tipoEtiqueta} não permite imprimir mais de 1 cópia.` });
       }
 
-      // Buscar Impressora Padrão
-      const impressoraRes = await DirectDb.executeQuery(
-        `SELECT "impressora" FROM "SPS_TIPO_IMP" WHERE "tipoEtq" = ? AND "default" = 'Y'`, 
-        [tipoEtiqueta]
-      );
+      let impressora = Impressora;
 
-      if (!impressoraRes || impressoraRes.length === 0) {
-        return res.status(400).json({ error: `A impressora padrão não está cadastrada para o tipo de etiqueta '${tipoEtiqueta}'.` });
+      if (impressora) {
+        // Validar se a impressora informada está vinculada ao tipo de etiqueta
+        const checkImp = await DirectDb.executeQuery(
+          `SELECT "impressora" FROM "SPS_TIPO_IMP" WHERE "tipoEtq" = ? AND "impressora" = ?`,
+          [tipoEtiqueta, impressora]
+        );
+        if (!checkImp || checkImp.length === 0) {
+          return res.status(400).json({ error: `A impressora '${impressora}' não está vinculada ao tipo de etiqueta '${tipoEtiqueta}'.` });
+        }
+      } else {
+        // Buscar Impressora Padrão
+        const impressoraRes = await DirectDb.executeQuery(
+          `SELECT "impressora" FROM "SPS_TIPO_IMP" WHERE "tipoEtq" = ? AND "default" = 'Y'`, 
+          [tipoEtiqueta]
+        );
+
+        if (!impressoraRes || impressoraRes.length === 0) {
+          return res.status(400).json({ error: `A impressora padrão não está cadastrada para o tipo de etiqueta '${tipoEtiqueta}'.` });
+        }
+
+        impressora = impressoraRes[0].impressora;
       }
-
-      const impressora = impressoraRes[0].impressora;
       const imprimirNaHora = req.body.imediato === true || req.body.imediato === 'true';
 
       if (imprimirNaHora) {
