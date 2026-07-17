@@ -63,6 +63,29 @@ class ApiController {
 
         impressora = impressoraRes[0].impressora;
       }
+
+      try {
+        const { exec } = require('child_process');
+        const util = require('util');
+        const execPromise = util.promisify(exec);
+        const { stdout } = await execPromise(`powershell -Command "(Get-Printer -Name '${impressora}').PrinterStatus"`);
+        const statusVal = stdout.trim();
+        const errorStatuses = ["Paused", "Offline", "Error", "OutOfPaper", "PaperJam", "PaperProblem"];
+        if (errorStatuses.includes(statusVal)) {
+           const ptBr = {
+             "Paused": "Pausada",
+             "Offline": "Offline",
+             "Error": "em Erro",
+             "OutOfPaper": "Sem Papel",
+             "PaperJam": "com Papel Atolado",
+             "PaperProblem": "com Problema no Papel"
+           };
+           return res.status(400).json({ error: `A impressora '${impressora}' não pode receber impressão no momento, pois está ${ptBr[statusVal] || statusVal}.` });
+        }
+      } catch (err) {
+        // Ignorar falha no comando powershell para não travar o processo inteiro
+      }
+
       const imprimirNaHora = req.body.imediato === true || req.body.imediato === 'true';
 
       if (imprimirNaHora) {
