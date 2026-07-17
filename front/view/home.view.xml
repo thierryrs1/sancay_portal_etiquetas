@@ -40,7 +40,7 @@
           text="Configurações Sistema"
           titleStyle="H3"
           class="sapUiSmallMarginTop sapUiTinyMarginBegin"
-          visible="{= ${Data>/Configura_Impressao} || ${Data>/Permissoes} || ${Data>/Fila_Impressao}}" />
+          visible="{= ${Data>/Configura_Impressao} || ${Data>/Permissoes} || ${Data>/Fila_Impressao} || ${Data>/Servidores_Impressao}}" />
       <FlexBox
           alignItems="Center"
           alignContent="Center"
@@ -50,7 +50,7 @@
           width="100%"
           displayInline="true"
           fitContainer="true"
-          visible="{= ${Data>/Configura_Impressao} || ${Data>/Permissoes} || ${Data>/Fila_Impressao}}">
+          visible="{= ${Data>/Configura_Impressao} || ${Data>/Permissoes} || ${Data>/Fila_Impressao} || ${Data>/Servidores_Impressao}}">
         <items>
           <GenericTile
               visible="{Data>/Permissoes}"
@@ -69,6 +69,16 @@
               press="onClickConfiguraImpressao">
             <TileContent>
               <ImageContent src="sap-icon://developer-settings" />
+            </TileContent>
+          </GenericTile>
+
+          <GenericTile
+              visible="{Data>/Servidores_Impressao}"
+              class="sapUiTinyMarginBegin sapUiTinyMarginTop tileLayout"
+              header="Servidores de Impressão"
+              press="onClickServidoresImp">
+            <TileContent>
+              <ImageContent src="sap-icon://it-system" />
             </TileContent>
           </GenericTile>
 

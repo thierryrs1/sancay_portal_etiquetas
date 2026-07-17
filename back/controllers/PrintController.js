@@ -34,7 +34,7 @@ class PrintController {
 
   async clearQueue(req, res) {
     try {
-      const result = await printService.clearQueue(req.body.printerName);
+      const result = await printService.clearQueue(req.body.printerName, req.body.serverIp, req.body.originalName);
       res.send(result);
     } catch(err) {
       sendError(res, err);

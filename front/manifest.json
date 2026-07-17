@@ -119,6 +119,11 @@
           "pattern": "etiquetamanual",
           "name": "etiquetamanual",
           "target": "etiquetamanual"
+        },
+        {
+          "pattern": "servidoresimp",
+          "name": "servidoresimp",
+          "target": "servidoresimp"
         }
       ],
       "targets": {
@@ -169,7 +174,12 @@
         "etiquetamanual": {
           "viewId": "etiquetamanual",
           "viewName": "etiquetamanual",
-          "viewLevel": 2
+          "viewLevel": 1
+        },
+        "servidoresimp": {
+          "viewId": "servidoresimp",
+          "viewName": "servidoresimp",
+          "viewLevel": 1
         }
       }
     }

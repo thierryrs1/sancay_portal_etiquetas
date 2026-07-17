@@ -205,11 +205,12 @@
                   width="100%"
                   items="{
                     path: 'Impressoras>/list',
+                    sorter: { path: 'Servidor' },
                     templateShareable: true
                 }">
                 <core:Item
                     key="{Impressoras>name}"
-                    text="{Impressoras>name}" />
+                    text="{Impressoras>Servidor} - {Impressoras>originalName}" />
               </Select>
             </t:template>
           </t:Column>

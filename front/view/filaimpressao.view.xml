@@ -35,42 +35,40 @@
         <Button icon="sap-icon://refresh" text="Atualizar" press="carregaDados" />
       </Toolbar>
       
-      <t:Table
-          id="tblList"
-          rows="{Data>/Items}"
-          selectionMode="None"
-          visibleRowCountMode="Auto"
-          class="sapUiSmallMargin">
-        <t:layoutData>
-          <FlexItemData growFactor="1" />
-        </t:layoutData>
-        <t:columns>
-          <t:Column width="20rem" sortProperty="Name" filterProperty="Name">
-            <Label text="Nome da Impressora" />
-            <t:template>
-              <Text text="{Data>Name}" />
-            </t:template>
-          </t:Column>
-          <t:Column width="18rem" sortProperty="PrinterStatus">
-            <Label text="Status da Impressora" />
-            <t:template>
-              <ObjectStatus text="{ path: 'Data>PrinterStatus', formatter: '.formatter.statusText' }" state="{ path: 'Data>PrinterStatus', formatter: '.formatter.statusState' }" />
-            </t:template>
-          </t:Column>
-          <t:Column width="10rem" sortProperty="JobCount">
-            <Label text="Documentos na Fila" />
-            <t:template>
-              <ObjectStatus text="{Data>JobCount}" state="{= ${Data>JobCount} === 0 ? 'Success' : (${Data>JobCount} > 10 ? 'Error' : 'Warning') }" />
-            </t:template>
-          </t:Column>
-          <t:Column width="12rem" hAlign="Center">
-            <Label text="Ações" />
-            <t:template>
-              <Button icon="sap-icon://delete" text="Limpar Fila" type="Reject" press="onClearQueue" enabled="{= ${Data>JobCount} > 0 }" />
-            </t:template>
-          </t:Column>
-        </t:columns>
-      </t:Table>
+      <ScrollContainer height="100%" width="100%" vertical="true">
+        <Table
+            id="tblList"
+            items="{
+               path: 'Data>/Items',
+               sorter: { path: 'Servidor', group: true }
+            }"
+            class="sapUiSmallMargin">
+          <columns>
+            <Column width="20rem">
+              <Label text="Nome da Impressora" />
+            </Column>
+            <Column width="18rem">
+              <Label text="Status da Impressora" />
+            </Column>
+            <Column width="10rem">
+              <Label text="Documentos na Fila" />
+            </Column>
+            <Column width="12rem" hAlign="Center">
+              <Label text="Ações" />
+            </Column>
+          </columns>
+          <items>
+            <ColumnListItem>
+              <cells>
+                <Text text="{Data>Name}" />
+                <ObjectStatus text="{ path: 'Data>PrinterStatus', formatter: '.formatter.statusText' }" state="{ path: 'Data>PrinterStatus', formatter: '.formatter.statusState' }" />
+                <ObjectStatus text="{Data>JobCount}" state="{= ${Data>JobCount} === 0 ? 'Success' : (${Data>JobCount} > 10 ? 'Error' : 'Warning') }" />
+                <Button icon="sap-icon://delete" text="Limpar Fila" type="Reject" press="onClearQueue" enabled="{= ${Data>JobCount} > 0 }" />
+              </cells>
+            </ColumnListItem>
+          </items>
+        </Table>
+      </ScrollContainer>
     </VBox>
   </Page>
 </mvc:View>

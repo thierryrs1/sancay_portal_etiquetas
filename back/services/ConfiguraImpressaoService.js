@@ -11,14 +11,17 @@ class ConfiguraImpressaoService {
     try {
       const printService = require('./PrintService');
       const queues = await printService.getQueues();
-      let filteredPrinters = queues.filter(q => q && q.Name).map(q => ({ name: q.Name }));
+      let filteredPrinters = queues.filter(q => q && q.Name).map(q => ({ name: q.Name, originalName: q.OriginalName, Servidor: q.Servidor }));
 
       const usedPrinters = await DirectDb.executeQuery(`SELECT DISTINCT "impressora" FROM SPS_TIPO_IMP`);
       for (let i = 0; i < usedPrinters.length; i++) {
         const impName = usedPrinters[i].impressora;
         // não adiciona se for redirecionada
-        if (impName && !/(redirected|redirecionado|redireccionado)/i.test(impName) && !(filteredPrinters.find((p) => p.name == impName))) {
-          filteredPrinters.push({ name: impName });
+        if (impName && !/(redirected|redirecionado|redireccionado)/i.test(impName)) {
+          const exists = filteredPrinters.find((p) => p.name == impName || p.originalName == impName);
+          if (!exists) {
+            filteredPrinters.push({ name: impName, originalName: impName, Servidor: "Histórico (Offline/Desconectada)" });
+          }
         }
       }
       return filteredPrinters;

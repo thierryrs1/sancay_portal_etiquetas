@@ -52,7 +52,7 @@ class EtiquetaController {
 
   async getImpressorasVolume(req, res) {
     try {
-      const { tipoEtq } = req.params;
+      const { tipoEtq } = req.body;
       const result = await etiquetaService.getImpressorasVolume(tipoEtq, req.userInfo.username);
       res.send(result);
     } catch (err) {

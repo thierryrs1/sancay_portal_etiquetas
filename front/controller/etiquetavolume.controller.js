@@ -143,6 +143,8 @@ sap.ui.define(
           return;
         }
         
+        this.carregaImpressoras(data.tipoEtq);
+        
         sap.ui.core.BusyIndicator.show();
         this.getView().byId("tblList").clearSelection();
         const tblList = this.getView().byId("tblList");
@@ -330,7 +332,8 @@ sap.ui.define(
         const path = tblList.getContextByIndex(selectedIndices[0]).getPath();
         const model = this.getModel("Data");
         const item = model.getProperty(path);
-        this.carregaImpressoras(item.tipoEtq);
+        const tipoEtq = model.getProperty("/tipoEtq") || item.tipoEtq;
+        this.carregaImpressoras(tipoEtq);
         
       },
 

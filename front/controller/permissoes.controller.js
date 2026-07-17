@@ -89,14 +89,15 @@ sap.ui.define(
 
             const filterTypeObj = new sap.ui.model.type.String();
 
+            const isCheckbox = (propName != "login" && propName != "name");
             const column = new sap.ui.table.Column({
-              label: new sap.m.Label({ text: label }),
+              label: new sap.m.Label({ text: label, wrapping: true }),
               hAlign,
               template,
-              width: "12rem",
+              width: isCheckbox ? "7rem" : "12rem",
               autoResizable: true,
-              filterProperty: (propName == "login" || propName == "name") ? propName : null,
-              filterType: (propName == "login" || propName == "name") ? filterTypeObj : null
+              filterProperty: !isCheckbox ? propName : null,
+              filterType: !isCheckbox ? filterTypeObj : null
             });
 
             tblList.addColumn(column);

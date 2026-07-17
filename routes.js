@@ -9,6 +9,7 @@ const permissoesController = require('./back/controllers/PermissoesController');
 const configuraImpressaoController = require("./back/controllers/ConfiguraImpressaoController");
 const configSpsController = require("./back/controllers/ConfigSpsController");
 const apiController = require('./back/controllers/ApiController');
+const servidoresImpController = require("./back/controllers/ServidoresImpController");
 
 routes.get('/', (req, res) => {
   res.sendFile(path.join(`${__dirname}/front/index.html`))
@@ -66,5 +67,9 @@ routes.post("/configuraImpressao/getTags", configuraImpressaoController.getTags)
 routes.post("/configuraImpressao/saveTags", configuraImpressaoController.saveTags);
 routes.get("/configuraImpressao/getIdiomas", configuraImpressaoController.getIdiomas);
 routes.post("/configuraImpressao/saveIdiomas", configuraImpressaoController.saveIdiomas);
+
+routes.use('/servidores', authMiddleware);
+routes.get('/servidores/getServidores', servidoresImpController.getServidores);
+routes.post('/servidores/saveServidores', servidoresImpController.saveServidores);
 
 module.exports = routes;

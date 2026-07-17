@@ -409,29 +409,74 @@ class PrintService {
   }
 
   async getQueues() {
-    return new Promise((resolve, reject) => {
-      const exec = require('child_process').exec;
-      exec('powershell -Command "Get-Printer | Where-Object {$_.Name -notmatch \'(redirected|redireccionado)\'} | Select-Object Name, PrinterStatus, JobCount | ConvertTo-Json"', { maxBuffer: 1024 * 500 }, (error, stdout, stderr) => {
-        if (error) {
-          logError(`Erro getQueues: ${error.message}`);
-          resolve([]);
-          return;
+    return new Promise(async (resolve, reject) => {
+      const { exec } = require('child_process');
+      const util = require('util');
+      const execPromise = util.promisify(exec);
+      const { DirectDb } = require("sps-sap-interface");
+
+      let servers = [];
+      try {
+        const resServers = await DirectDb.executeQuery(`SELECT "ip", "descricao" FROM "SPS_SERVIDORES_IMP"`);
+        if (resServers && resServers.length > 0) {
+          servers = resServers.map(s => ({
+            ip: s.ip || s.IP,
+            descricao: s.descricao || s.DESCRICAO
+          }));
+        }
+      } catch (e) {}
+
+      if (servers.length === 0) {
+        servers.push({ ip: "Localhost", descricao: "Servidor Local" });
+      }
+
+      let allPrinters = [];
+
+      for (const srv of servers) {
+        let cmd = 'powershell -Command "Get-Printer | Where-Object {$_.Name -notmatch \'(redirected|redireccionado)\'} | Select-Object Name, PrinterStatus, JobCount | ConvertTo-Json"';
+        
+        // Se o ip for o próprio servidor local, não passamos ComputerName para evitar prefixar UNC path 
+        // e evitar problemas de RPC loopback, mas como não sabemos o IP local, 
+        // vamos usar o ComputerName a menos que seja "Localhost"
+        if (srv.ip !== "Localhost") {
+          cmd = `powershell -Command "Get-Printer -ComputerName '${srv.ip}' | Where-Object {$_.Name -notmatch '(redirected|redireccionado)'} | Select-Object Name, PrinterStatus, JobCount | ConvertTo-Json"`;
         }
         try {
-          const printers = JSON.parse(stdout);
-          resolve(Array.isArray(printers) ? printers : [printers]);
-        } catch(e) {
-          resolve([]);
+          const { stdout } = await execPromise(cmd, { maxBuffer: 1024 * 500 });
+          if (stdout && stdout.trim()) {
+             let printers = JSON.parse(stdout);
+             if (!Array.isArray(printers)) printers = [printers];
+             printers.forEach(p => {
+               p.Servidor = srv.descricao || srv.ip;
+               p.ServidorIP = srv.ip;
+               p.OriginalName = p.Name;
+               if (srv.ip !== "Localhost" && !p.Name.startsWith('\\\\')) {
+                 p.Name = `\\\\${srv.ip}\\${p.Name}`; 
+               }
+             });
+             allPrinters = allPrinters.concat(printers);
+          }
+        } catch (err) {
+          logError(`Erro getQueues no servidor ${srv.ip}: ${err.message}`);
         }
-      });
+      }
+      resolve(allPrinters);
     });
   }
 
-  async clearQueue(printerName) {
+  async clearQueue(printerName, serverIp, originalName) {
     return new Promise((resolve, reject) => {
       const exec = require('child_process').exec;
-      const sanitized = String(printerName).replace(/"/g, '""');
-      exec(`powershell -Command "Get-PrintJob -PrinterName \\"${sanitized}\\" | Remove-PrintJob"`, (error, stdout, stderr) => {
+      let cmd = "";
+      if (serverIp && serverIp !== "Localhost") {
+        const sanitized = String(originalName || printerName).replace(/"/g, '""');
+        cmd = `powershell -Command "Get-PrintJob -ComputerName '${serverIp}' -PrinterName \\"${sanitized}\\" | Remove-PrintJob"`;
+      } else {
+        const sanitized = String(printerName).replace(/"/g, '""');
+        cmd = `powershell -Command "Get-PrintJob -PrinterName \\"${sanitized}\\" | Remove-PrintJob"`;
+      }
+      
+      exec(cmd, (error, stdout, stderr) => {
         if (error) {
           reject(error);
           return;

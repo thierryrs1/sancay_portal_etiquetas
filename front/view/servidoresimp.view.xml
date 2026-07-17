@@ -1,0 +1,53 @@
+<mvc:View
+  controllerName="sps.wms.controller.servidoresimp"
+  xmlns="sap.m"
+  xmlns:core="sap.ui.core"
+  xmlns:mvc="sap.ui.core.mvc"
+  xmlns:t="sap.ui.table"
+  xmlns:layout="sap.ui.layout">
+  <Page title="Servidores de Impressão" showNavButton="true" navButtonPress="onBack">
+    <content>
+      <VBox class="sapUiSmallMargin">
+        <t:Table
+            id="tblServidores"
+            rows="{Data>/list}"
+            selectionMode="None"
+            visibleRowCount="15"
+            width="100%">
+          <t:extension>
+            <OverflowToolbar>
+              <Title text="IPs / Hostnames Configurados" />
+              <ToolbarSpacer />
+              <Button icon="sap-icon://add" text="Adicionar" press="onAdd" />
+            </OverflowToolbar>
+          </t:extension>
+          <t:columns>
+            <t:Column width="15rem">
+              <Label text="IP / Hostname" />
+              <t:template>
+                <Input value="{Data>ip}" placeholder="Ex: 192.168.30.14" />
+              </t:template>
+            </t:Column>
+            <t:Column>
+              <Label text="Descrição" />
+              <t:template>
+                <Input value="{Data>descricao}" placeholder="Ex: Servidor de Impressão Fábrica" />
+              </t:template>
+            </t:Column>
+            <t:Column width="4rem">
+              <t:template>
+                <Button icon="sap-icon://delete" type="Transparent" press="onDelete" />
+              </t:template>
+            </t:Column>
+          </t:columns>
+        </t:Table>
+      </VBox>
+    </content>
+    <footer>
+      <OverflowToolbar>
+        <ToolbarSpacer />
+        <Button text="Gravar" press="onSave" type="Accept" icon="sap-icon://save" />
+      </OverflowToolbar>
+    </footer>
+  </Page>
+</mvc:View>

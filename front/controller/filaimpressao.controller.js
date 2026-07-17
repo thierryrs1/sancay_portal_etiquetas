@@ -86,6 +86,8 @@ sap.ui.define(
       onClearQueue: async function (oEvent) {
         const rowData = oEvent.getSource().getBindingContext("Data").getProperty();
         const printerName = rowData.Name;
+        const serverIp = rowData.ServidorIP;
+        const originalName = rowData.OriginalName;
 
         MessageBox.confirm(`Tem certeza que deseja limpar a fila (cancelar todos os trabalhos) da impressora ${printerName}?`, {
             title: "Limpar Fila",
@@ -93,7 +95,7 @@ sap.ui.define(
                 if (oAction === MessageBox.Action.OK) {
                     try {
                         sap.ui.core.BusyIndicator.show(0);
-                        await this.serverService.post("/printer/clearQueue", { printerName: printerName });
+                        await this.serverService.post("/printer/clearQueue", { printerName: printerName, serverIp: serverIp, originalName: originalName });
                         MessageToast.show(`Fila da impressora ${printerName} limpa com sucesso!`);
                         await this.carregaDados();
                     } catch (ex) {

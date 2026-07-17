@@ -39,6 +39,7 @@
         enableCellFilter="true"
         width="100%"
         rowHeight="40"
+        columnHeaderHeight="50"
         rowSelectionChange="onRowSelectionChange">
       <t:extension>
         <f:SimpleForm
