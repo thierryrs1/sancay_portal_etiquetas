@@ -164,11 +164,12 @@ sap.ui.define(
 
       deleteTipoImp(oEvent) {
         const rowData = oEvent.getSource().getBindingContext("TipoImp").getProperty();
-        const path = oEvent.getSource().getBindingContext("TipoImp").getPath();
-        const idx = parseInt(path.split("/")[2]);
-        const list = this.getModelProperty("TipoImp", "list");
-        list.splice(idx, 1);
-        this.setModelProperty("TipoImp", "list", list);
+        const dataList = this.getModelProperty("Data", "tipoImps");
+        const dataIdx = dataList.indexOf(rowData);
+        if (dataIdx > -1) {
+          dataList.splice(dataIdx, 1);
+        }
+        this.carregaTipoImps(this.tipoEtqSelecionado);
       },
 
       onManualSelect: function(oEvent) {
@@ -195,7 +196,11 @@ sap.ui.define(
         }
         const list = this.getModelProperty("TipoImp", "list");
         list[list.length - 1].tipoEtq = this.tipoEtqSelecionado;
-        list.push({ tipoEtq: null });
+        
+        const novoItem = { tipoEtq: null };
+        list.push(novoItem);
+        this.getModelProperty("Data", "tipoImps").push(novoItem);
+        
         this.getModel("TipoImp").refresh();
       },
 
