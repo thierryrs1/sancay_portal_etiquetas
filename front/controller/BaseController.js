@@ -235,6 +235,11 @@ sap.ui.define(
         });
       },
       showExceptionMessageBox(title, text, err) {
+        if (err && err.data && err.data.status === 401) {
+          sessionStorage.setItem("token", "");
+          this.getRouter().navTo("login");
+          return;
+        }
         let exceptionText = "";
         if (err) {
           if (err.data) {

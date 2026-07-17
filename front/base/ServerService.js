@@ -32,6 +32,10 @@ async function request({
         resolve(result);
       },
       error: function(data, textStatus, errorThrown) {
+        if (data && data.status === 401) {
+          sessionStorage.setItem("token", "");
+          window.location.hash = "#/login";
+        }
         reject({
           url,
           data,
